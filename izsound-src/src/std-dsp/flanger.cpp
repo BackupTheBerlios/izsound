@@ -93,14 +93,14 @@ void Flanger::performDsp()
     {
     case INIT_STATE:
       // We must pitch up during half a period
-      if ((samplesCounter % 60) == 0)
+      if ((++samplesCounter % m_pitchTrigger) == 0)
       {
         if (j != psize - 1)
         {
           ++j;
         }
       }
-      if ((++samplesCounter % m_halfPeriodSamplesCount) == 0)
+      if ((samplesCounter % m_halfPeriodSamplesCount) == 0)
       {
         samplesCounter  = 0;
         m_internalState = SLOW_STATE;
@@ -109,14 +109,14 @@ void Flanger::performDsp()
 
     case FAST_STATE:
       // We must pitch up during a full period
-      if ((samplesCounter % 60) == 0)
+      if ((++samplesCounter % m_pitchTrigger) == 0)
       {
         if (j !=psize - 1)
         {
           ++j;
         }
       }
-      if ((++samplesCounter % m_periodSamplesCount) == 0)
+      if ((samplesCounter % m_periodSamplesCount) == 0)
       {
         samplesCounter  = 0;
         m_internalState = SLOW_STATE;
@@ -125,14 +125,14 @@ void Flanger::performDsp()
 
     case SLOW_STATE:
       // We must slow down during a full period
-      if ((samplesCounter % 60) == 0)
+      if ((++samplesCounter % m_pitchTrigger) == 0)
       {
         if (j != 0)
         {
           --j;
         }
       }
-      if ((++samplesCounter % m_periodSamplesCount) == 0)
+      if ((samplesCounter % m_periodSamplesCount) == 0)
       {
         samplesCounter  = 0;
         m_internalState = FAST_STATE;
@@ -174,7 +174,9 @@ void Flanger::setFrequency(const double &frequency)
 void Flanger::setAmplitude(const double &amplitude)
 {
   m_amplitude = amplitude;
-  
+  double rate = (double)m_sampleRate;
+  double bs = rate / ((rate * m_amplitude) - m_amplitude);
+  m_pitchTrigger = (unsigned int)bs;
 }
 
 void Flanger::setWet(const double &wet)

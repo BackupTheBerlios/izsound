@@ -596,6 +596,4 @@ void flanger()
 
   // Cleanups
   ao.flush();
-
-  cout << "[ The flanger is not operationnal. ]" << endl << endl;
 }

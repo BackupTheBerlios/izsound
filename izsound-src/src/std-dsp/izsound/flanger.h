@@ -37,7 +37,9 @@ namespace izsound
 /**
  * A DSP unit that applies a flanger effect on a sound stream.
  * This unit has one input slot and one output slot.
- * <b>IT IS NOT OPERATIONAL.</b>
+ *
+ * <b>It is not yet fully working as changing the frequency on-the-fly
+ * should introduce a decay in the sound processing.</b>
  *
  * @author Julien PONGE <julien@izforge.com>
  */
@@ -72,6 +74,9 @@ private:
   
   /** The number of samples for a half period. */
   unsigned int m_halfPeriodSamplesCount;
+  
+  /** Tells the number of samples to process before a pitching is done. */
+  unsigned int m_pitchTrigger;
 
 protected:
 
@@ -90,8 +95,8 @@ public:
    * @param wet The wet ratio in the [0, 1] range.
    * @param sampleRate The audio chain sample rate.
    */
-  Flanger(const double &frequency = 0.5,
-          const double &amplitude = 0.0001,
+  Flanger(const double &frequency = 0.25,
+          const double &amplitude = 0.001,
           const double &wet = 0.5,
           const unsigned int &sampleRate = 44100);
 
@@ -115,9 +120,9 @@ public:
   inline double getAmplitude() const { return m_amplitude; }
 
   /**
-   * Gets the flanger wet/dry ratio.
+   * Gets the flanger wet amount.
    *
-   * @return The flanger wet/dry ratio.
+   * @return The flanger wet amount.
    */
   inline double getWet() const { return m_wet; }
 
@@ -129,16 +134,17 @@ public:
   void setFrequency(const double &frequency);
 
   /**
-   * Sets the flanger amplitude.
+   * Sets the flanger amplitude. A low amplitude such as 0.001 gives great
+   * results. It is used to compute the pitching amount.
    *
    * @param amplitude The new amplitude.
    */
   void setAmplitude(const double &amplitude);
 
   /**
-   * Sets the flanger wet/dry ratio.
+   * Sets the flanger wet amount. The dry ratio will be (1 - wet).
    *
-   * @param wet The new wet/dry ratio.
+   * @param wet The new wet amount.
    */
   void setWet(const double &wet);
 
