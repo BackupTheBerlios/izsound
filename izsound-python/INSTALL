@@ -1,0 +1,12 @@
+By default, every IzSound DSP unit will be wrapped. However, every IzSound DSP
+unit that has a requirement on the GPL license can be disabled at compilation
+time. It is possible to disable the wrappers generation for these DSP units.
+
+1/ The 'swig-it.py' script invokes Swig to generate the wrappers code. Try
+'./swig-it.py --help' to see the options.
+
+2/ IzSound-Python uses the Python distutils package. Take a look at the
+'setup.cfg' file to customize it to your specific needs.
+
+3/ Build the extension the standard way ('python setup.py build install' for
+instance).
