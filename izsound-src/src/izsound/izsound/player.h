@@ -26,7 +26,9 @@
 #ifndef IZSOUND_PLAYER_H
 #define IZSOUND_PLAYER_H
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 namespace izsound
 {

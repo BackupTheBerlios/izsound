@@ -85,7 +85,7 @@ void Flanger::performDsp()
   double rtemp;
   unsigned int osize = m_originalBuffer[0].size();
   unsigned int psize = m_pitchedBuffer[0].size();
- if (osize + psize == 0)         // No data, nothing to do.
+  if (osize + psize == 0)         // No data, nothing to do.
   {
     return;
   }

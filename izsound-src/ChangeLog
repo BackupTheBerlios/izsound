@@ -1,5 +1,16 @@
 [ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
 
+2003.12.18 (Julien Ponge):
+* Fixed a bug when connecting/deconnecting DSP units on-the-fly.
+* Added some missing HAVE_CONFIG_H preprocessor tests.
+
+2003.12.16 (Julien Ponge):
+* Better volume clipping (avoids 'clicks').
+
+2003.12.15 (Julien Ponge):
+* Added the BandFilter DSP unit.
+* Minor Doxygen file tweak.
+
 2003.12.09 (Julien Ponge):
 * Added the DataPicker DSP unit.
 

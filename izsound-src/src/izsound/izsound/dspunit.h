@@ -26,11 +26,15 @@
 #ifndef IZSOUND_DSPUNIT_H
 #define IZSOUND_DSPUNIT_H
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #include <deque>
 #include <vector>
 #include <algorithm>
+
+#define CLIPPING_VALUE 0.999999
 
 using namespace std;
 
@@ -38,9 +42,10 @@ namespace izsound
 {
 
 /**
- * Defines a slot data. A slot data is made of a vector of 2 stereo channels, 
-the * first beeing left and the second beeing right. Then a channel is made of a
- * <code>deque</code> of <code>double</code> whose values range is -1.0 to 1.0.
+ * Defines a slot data. A slot data is made of a vector of 2 stereo channels,
+ * the first beeing left and the second beeing right. Then a channel is made of
+ * a <code>deque</code> of <code>double</code> whose values range is -1.0 to
+ * 1.0.
  */
 typedef vector<deque<double> > SlotData;
 

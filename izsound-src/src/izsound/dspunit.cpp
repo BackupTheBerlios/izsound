@@ -88,7 +88,6 @@ void DspUnit::disconnect(const unsigned int &mySlot)
   if (mySlot > m_maxOutSlots || m_outSlots[mySlot] == 0) return;
 
   // We disconnect
-  m_outSlots[mySlot]->clear();
   m_outSlots[mySlot] = 0;
   m_outDspUnits[mySlot]->m_receptionTrigger--;
   m_outDspUnits[mySlot] = 0;

@@ -1,0 +1,8 @@
+This file is made to thank the people who have helped directly or indirectly to
+the IzSound project. If you think that you have been forgotten, please contact
+the maintainer so that it gets corrected.
+
+[ Jan Paul Schmidt / Kai Lassfolk / Charles Dodge, Thomas A. Jerse ]
+
+The BandFilter unit is built using the formulas of their respective butterworth
+effects implementation.

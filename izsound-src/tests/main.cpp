@@ -52,6 +52,7 @@
 #include <blackhole.h>
 #include <datapicker.h>
 #include <crossfader.h>
+#include <bandfilter.h>
 #include <libaooutput.h>
 #include <demultiplexer.h>
 #include <oggfiledecoder.h>
@@ -74,6 +75,8 @@ void delayextrastereo();
 void demultiplexer();
 void flanger();
 void picker();
+void bandfilter();
+void connexions();
 
 /**
  * The program entry-point.
@@ -114,8 +117,12 @@ int main(int argc, char** argv)
          << "- picker: OggFileDecoder + DataPicker + LibaoOutput"
             "\n  (needs a file named track.ogg)" << endl
          << "  (needs GnuPlot)" << endl
+         << "- bandfilter: OggFileDecoder + BandFilter + LibaoOutput"
+            "\n  (needs a file named track.ogg)" << endl
+         << "- connexions: OggFileDecoder + (BandFilter | Flanger) + "
+            "LibaoOutput\n  (needs a file named track.ogg)" << endl
          << endl;
-      exit(0);
+    exit(0);
   }
   for (int i = 1; i < argc; ++i)
   {
@@ -147,6 +154,10 @@ int main(int argc, char** argv)
       flanger();
     else if (strcmp(argv[i], "picker") == 0)
       picker();
+    else if (strcmp(argv[i], "bandfilter") == 0)
+      bandfilter();
+    else if (strcmp(argv[i], "connexions") == 0)
+      connexions();
   }
 
   return 0;
@@ -371,7 +382,7 @@ void volume()
     cout << "OGG initialisation failed." << endl;
     return;
   }
-  Volume volume(0.25);
+  Volume volume(0.5);
 
   // Connection
   decoder.connect(&volume, 0, 0);
@@ -673,6 +684,123 @@ void picker()
   script.flush();
   script.close();
   system("gnuplot picked.gplot");
+
+  // Cleanups
+  ao.flush();
+}
+
+/**
+ * BandFilter test.
+ */
+void bandfilter()
+{
+  // Init
+  cout << endl << "[ bandfilter ]" << endl << endl;
+  bool success;
+  OggFileDecoder decoder("track.ogg", success);
+  if (!success)
+  {
+    cout << "OGG initialisation failed." << endl;
+    return;
+  }
+  LibaoOutput ao("oss", 0, success);
+  if (!success)
+  {
+    cout << "Could not initialise OSS/LibAO." << endl;
+    return;
+  }
+  BandFilter filter;
+
+  // Connection
+  decoder.connect(&filter, 0, 0);
+  filter.connect(&ao, 0, 0);
+
+  // Let's roll baby !
+  filter.setBandPassMode(800.0, 400.0);
+	int cpt = 0;
+  while (!decoder.isEndReached())
+  {
+		++cpt;
+		if (cpt % 4000 == 0)
+		{
+			filter.setLowPassMode(400.0);
+		}
+		else if (cpt % 3000 == 0)
+		{
+			filter.setHighPassMode(1000.0);
+		}
+		else if (cpt % 2000 == 0)
+		{
+			filter.setBandPassMode(1000.0, 400.0);
+		}
+		else if (cpt % 1000 == 0)
+		{
+			filter.setBandRejectMode(1000.0, 400.0);
+		}
+    decoder.run();						
+  }
+  for (int i = 0; i < 10; ++i)
+  {
+    decoder.run();
+  }
+
+
+  // Cleanups
+  ao.flush();
+}
+
+/**
+ * Connexions test.
+ */
+void connexions()
+{
+  // Init
+  cout << endl << "[ connexions ]" << endl << endl;
+  bool success;
+  OggFileDecoder decoder("track.ogg", success);
+  if (!success)
+  {
+    cout << "OGG initialisation failed." << endl;
+    return;
+  }
+  LibaoOutput ao("oss", 0, success);
+  if (!success)
+  {
+    cout << "Could not initialise OSS/LibAO." << endl;
+    return;
+  }
+  Flanger flanger;
+  BandFilter filter;
+
+  // Connection
+  decoder.connect(&flanger, 0, 0);
+  flanger.connect(&ao, 0, 0);
+
+  // Let's roll baby !
+  unsigned int cpt = 0;
+  while (!decoder.isEndReached())
+  {
+    decoder.run();
+    if (++cpt % 1500 == 0)
+    {
+      decoder.disconnect(0);
+      flanger.disconnect(0);
+      decoder.connect(&filter, 0, 0);
+      filter.connect(&ao, 0, 0);
+    }
+    else if (cpt % 750 == 0)
+    {
+      decoder.disconnect(0);
+      filter.disconnect(0);
+      decoder.connect(&flanger, 0, 0);
+      flanger.connect(&ao, 0, 0);
+    }
+  }
+  for (int i = 0; i < 10; ++i)
+  {
+    decoder.run();
+  }
+
 
   // Cleanups
   ao.flush();

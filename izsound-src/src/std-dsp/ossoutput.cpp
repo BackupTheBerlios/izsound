@@ -81,21 +81,21 @@ void OssOutput::performDsp()
 void OssOutput::writeToBuffer(double &left, double &right)
 {
   // Simple-brutal-stupid Clipping
-  if (left > 1.0)
+  if (left >= 1.0)
   {
-    left = 1.0;
+    left = CLIPPING_VALUE;
   }
-  else if (left < -1.0)
+  else if (left <= -1.0)
   {
-    left = -1.0;
+    left = -CLIPPING_VALUE;
   }
-  if (right > 1.0)
+  if (right >= CLIPPING_VALUE)
   {
-    right = 1.0;
+    right = CLIPPING_VALUE;
   }
-  else if (right < -1.0)
+  else if (right <= -1.0)
   {
-    right = -1.0;
+    right = -CLIPPING_VALUE;
   }
 
   // Data conversion
