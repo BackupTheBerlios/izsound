@@ -1,4 +1,7 @@
-[ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
+[ IzSound 0.2.0 ] (2004.01.19) release-0-2-0
+
+2004.01.19 (Julien Ponge):
+* New IzSound release.
 
 2004.01.17 (Julien Ponge):
 * Libtool versioning: moved from -release to -version-info. The versioning
