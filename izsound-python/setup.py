@@ -40,7 +40,7 @@ metadata = {
   'url'              : 'http://www.izforge.com/izsound/',
   'description'      : 'Simple wrapping of the IzSound APIs.',
   'long_description' : 'Simple wrapping of the IzSound APIs.',
-  'license'      : 'BSD-style'
+  'license'          : 'BSD-style'
 }
 
 # We describe the module
