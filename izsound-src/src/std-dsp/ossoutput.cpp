@@ -101,10 +101,17 @@ void OssOutput::writeToBuffer(double &left, double &right)
   // Data conversion
   short ileft = (short)floor(left * 32768.0);
   short iright = (short)floor(right * 32768.0);
+#ifdef WORDS_BIGENDIAN
+  m_pcmBuffer[m_pcmBufferPosition++] = (unsigned char) ((ileft >> 8) & 0xff);
+  m_pcmBuffer[m_pcmBufferPosition++] = (unsigned char) (ileft & 0xff);
+  m_pcmBuffer[m_pcmBufferPosition++] = (unsigned char) ((iright >> 8) & 0xff);
+  m_pcmBuffer[m_pcmBufferPosition++] = (unsigned char) (iright & 0xff);
+#else
   m_pcmBuffer[m_pcmBufferPosition++] = (unsigned char) (ileft & 0xff);
   m_pcmBuffer[m_pcmBufferPosition++] = (unsigned char) ((ileft >> 8) & 0xff);
   m_pcmBuffer[m_pcmBufferPosition++] = (unsigned char) (iright & 0xff);
   m_pcmBuffer[m_pcmBufferPosition++] = (unsigned char) ((iright >> 8) & 0xff);
+#endif
 
   // We write to the device if needed
   if (m_pcmBufferPosition == m_pcmBufferSize)

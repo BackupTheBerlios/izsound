@@ -36,6 +36,7 @@ AC_CHECK_HEADERS(sys/stat.h sys/fcntl.h sys/ioctl.h sys/types.h sys/soundcard.h)
 AC_PROG_CXX
 AC_C_CONST
 AC_C_INLINE
+AC_C_BIGENDIAN
 
 # Checks for library functions.
 

@@ -1,5 +1,9 @@
 [ IzSound x.y.z ] (2003.xx.yy) release-x-y-z
 
+2003.10.20 (Julien Ponge):
+* OssOutput and LibaoOutput should (hopefully !) be portable on big-endian
+  architectures.
+
 2003.10.18 (Julien Ponge):
 * Added the '-pipe' GCC flag for the debug mode.
 
