@@ -1,0 +1,11 @@
+[ What's new in IzSound 0.1.0 ]
+
+- IzSound leaves the alpha status for the beta status.
+- A new MadDecoder DSP unit allows the decoding of MP3 files.
+- OggFileDecoder goes to the stopped status when the end of the file is
+  reached.
+- First appearance of the IzSound manual, written using XML DocBook.
+- A new reset() method has been added to the DspUnit class.
+- The Doxygen documentation allows the reader to browse the entire IzSound
+  source code.
+- Various minor fixes.

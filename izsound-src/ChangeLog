@@ -1,4 +1,7 @@
-[ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
+[ IzSound 0.1.0 ] (2004.01.05) release-0-1-0
+
+2004.01.05 (Julien Ponge):
+* New IzSound release, leaving the alpha status for the beta status.
 
 2004.01.03 (Julien Ponge):
 * MadDecoder: all the methods are now implemented. However, seeking and getting
