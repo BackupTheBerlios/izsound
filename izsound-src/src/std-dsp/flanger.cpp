@@ -34,56 +34,20 @@ Flanger::Flanger(const double &frequency,
                  const unsigned int &sampleRate)
    : DspUnit(sampleRate, 1, 1)
 {
-  // DSP
-  m_fragmenter = new Fragmenter(100, m_sampleRate);
-  m_demux  = new DeMultiplexer(2, m_sampleRate);
-  m_pitch  = new Pitch(1.0001, m_sampleRate);
-  m_xfader = new CrossFader(0.0, m_sampleRate);
-
-  // We plug everything together
-  m_fragmenter->connect(m_demux, 0, 0);
-  m_demux->connect(m_xfader, 0, 0);
-  m_demux->connect(m_pitch, 1, 0);
-  m_pitch->connect(m_xfader, 0, 1);
-  m_fragmenter->bindInput(this, 0, 0);
-  m_internalOutput.resize(2);
-  m_xfader->bindOutput(&m_internalOutput, 0);
-
-  // Initial setup
-  this->setFrequency(frequency);
-  this->setAmplitude(amplitude);
-  this->setWet(wet);
+  // Init
+  setFrequency(frequency);
+  setAmplitude(amplitude);
+  setWet(wet);
 }
 
 Flanger::~Flanger()
 {
-  delete m_fragmenter;
-  delete m_demux;
-  delete m_pitch;
-  delete m_xfader;
+
 }
 
 void Flanger::performDsp()
 {
-  // Init
-  SlotData* output = m_outSlots[0];
 
-  // We run the internal chain
-  m_fragmenter->run();
-  static int cpt = 0;
-  cpt++;
-  if (cpt % 2 == 0)
-    m_pitch->setRatio(0.998);
-  else
-    m_pitch->setRatio(1.001);
-
-  // We send the result to the output stream
-  (*output)[0].clear();
-  (*output)[1].clear();
-  back_insert_iterator<deque<double> > biLeft((*output)[0]);
-  back_insert_iterator<deque<double> > biRight((*output)[1]);
-  copy(m_internalOutput[0].begin(), m_internalOutput[0].end(), biLeft);
-  copy(m_internalOutput[1].begin(), m_internalOutput[1].end(), biRight);
 }
 
 void Flanger::setFrequency(const double &frequency)

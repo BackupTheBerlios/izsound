@@ -67,7 +67,7 @@ void Pitch::setRatio(const double &ratio)
 void Pitch::performDsp()
 {
   // Init
-  SlotData* input = m_inSlots[0];
+  SlotData* input  = m_inSlots[0];
   SlotData* output = m_outSlots[0];
   (*output)[0].clear();
   (*output)[1].clear();
