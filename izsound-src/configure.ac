@@ -5,13 +5,16 @@ AM_INIT_AUTOMAKE([dist-bzip2])
 AM_SANITY_CHECK
 
 # Libtool shared versioning (current:revision:age)
-# current  -> bumped when the interfaces change (revision and age go to 0)
-# revision -> bumped on each release if the interfaces are stable
-# age      -> bumped on each release if the interfaces are stable and new
-#             interfaces have been added
 #
-# We start at 0:2:0 (as of the 0.2.0 release)
-SHARED_VERSION="0:2:0"
+# - If the source code has only changed since the last release, then revision is
+#   bumped.
+# - If the interfaces have been changed (addition, change, removal), then
+#   current is bumped and revision is set to 0.
+# - If any interfaces have been added, then age is bumped.
+# - If any interfaces have been removed, then age is set to 0.
+#
+# We start at 0:0:0 (as of the 0.2.0 release)
+SHARED_VERSION="0:0:0"
 AC_SUBST(SHARED_VERSION)
 
 # Checks for programs.
