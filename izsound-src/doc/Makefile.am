@@ -1,1 +1,1 @@
-SUBDIRS = classes
+SUBDIRS = classes manual
