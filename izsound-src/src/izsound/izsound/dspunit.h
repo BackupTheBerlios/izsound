@@ -30,6 +30,7 @@
 
 #include <deque>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -37,8 +38,8 @@ namespace izsound
 {
 
 /**
- * Defines a slot data. A slot data is made of a vector of 2 stereo channels, the
- * first beeing left and the second beeing right. Then a channel is made of a
+ * Defines a slot data. A slot data is made of a vector of 2 stereo channels, 
+the * first beeing left and the second beeing right. Then a channel is made of a
  * <code>deque</code> of <code>double</code> whose values range is -1.0 to 1.0.
  */
 typedef vector<deque<double> > SlotData;
@@ -85,6 +86,9 @@ protected:
 
   /** The out-slots data. */
   vector<SlotData*> m_outSlots;
+
+  /** The binded slots tracker. */
+  bit_vector m_bindedSlots;
 
   /** The output dsp units. */
   vector<DspUnit*> m_outDspUnits;
@@ -170,6 +174,30 @@ public:
    * connections are made !</b>. You could get memory errors if you did so.
    */
   void run();
+
+  /**
+   * Binds an input slot of the unit to another DspUnit input slot.
+   * <b>Use with extreme care, this can be dangerous and is only recommended
+   * when building a DSP chain inside a DSP unit. There is no checking
+   * performed.</b>
+   *
+   * @param The dsp to bind the input to.
+   * @param mySlot The slot number of this DSP.
+   * @param itsSlot The other unit slot number.
+   */
+  void bindInput(DspUnit* dsp, const unsigned int &mySlot,
+                 const unsigned int itsSlot);
+
+  /**
+   * Binds an output slot of the unit to a <code>SlotData</code> instance.
+   * <b>Use with extreme care, this can be dangerous and is only recommended
+   * when building a DSP chain inside a DSP unit. There is no checking
+   * performed.</b>
+   *
+   * @param data The data to use as the output.
+   * @param slot The slot number.
+   */
+  void bindOutput(SlotData* data, const unsigned int &slot);
 
 };
 

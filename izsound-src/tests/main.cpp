@@ -44,6 +44,7 @@
 #include <pitch.h>
 #include <volume.h>
 #include <dspunit.h>
+#include <flanger.h>
 #include <silencer.h>
 #include <ossoutput.h>
 #include <blackhole.h>
@@ -68,6 +69,7 @@ void oggseek();
 void aowritefile();
 void delayextrastereo();
 void demultiplexer();
+void flanger();
 
 /**
  * The program entry-point.
@@ -103,11 +105,15 @@ int main(int argc, char** argv)
             "\n  (needs a file named track.ogg)" << endl
          << "- demultiplexer : OggFileDecoder + DeMultiplexer + LibaoOutput * 2"
             "\n  (needs a file named track.ogg)" << endl
+         << "- flanger: OggFileDecoder + Flanger + LibaoOutput"
+            "\n  (needs a file named track.ogg)" << endl
          << endl;
       exit(0);
   }
   for (int i = 1; i < argc; ++i)
   {
+    // Yes, it looks like bad old C, a map to functions would be cleaner,
+    // but ... it's like that and that's the wat it is.
     if (strcmp(argv[i], "chainwork") == 0)
       chainwork();
     else if (strcmp(argv[i], "silence_oss") == 0)
@@ -130,6 +136,8 @@ int main(int argc, char** argv)
       delayextrastereo();
     else if (strcmp(argv[i], "demultiplexer") == 0)
       demultiplexer();
+    else if (strcmp(argv[i], "flanger") == 0)
+      flanger();
   }
 
   return 0;
@@ -552,4 +560,40 @@ void demultiplexer()
   // Cleanups
   aoPlay.flush();
   aoWrite.flush();
+}
+
+/**
+ * Flanger test.
+ */
+void flanger()
+{
+  // Init
+  cout << endl << "[ flanger ]" << endl << endl;
+  bool success;
+  OggFileDecoder decoder("track.ogg", success);
+  if (!success)
+  {
+    cout << "OGG initialisation failed." << endl;
+    return;
+  }
+  LibaoOutput ao("oss", 0, success);
+  if (!success)
+  {
+    cout << "Could not initialise OSS/LibAO." << endl;
+    return;
+  }
+  Flanger flanger;
+
+  // Connection
+  decoder.connect(&flanger, 0, 0);
+  flanger.connect(&ao, 0, 0);
+
+  // Let's roll baby !
+  while (!decoder.isEndReached())
+  {
+    decoder.run();
+  }
+
+  // Cleanups
+  ao.flush();
 }

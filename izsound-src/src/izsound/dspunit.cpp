@@ -41,6 +41,8 @@ DspUnit::DspUnit(const unsigned int &sampleRate,
   m_inSlots.resize(m_maxInSlots);
   m_outSlots.resize(m_maxOutSlots);
   m_outDspUnits.resize(m_maxOutSlots);
+  m_bindedSlots.resize(m_maxInSlots);
+  fill(m_bindedSlots.begin(), m_bindedSlots.end(), false);
 
   unsigned int i;
   for (i = 0; i < m_maxInSlots; ++i)
@@ -59,9 +61,10 @@ DspUnit::~DspUnit()
 {
   for (unsigned int i = 0; i < m_maxInSlots; ++i)
   {
-    if (m_inSlots[i] != 0)
+    if ((m_inSlots[i] != 0) && !(m_bindedSlots[i]))
     {
       delete m_inSlots[i];
+      m_inSlots[i] = 0;
     }
   }
 }
@@ -110,4 +113,17 @@ void DspUnit::run()
 
   // Ready for next time
   m_receptionCounter = 0;
+}
+
+void DspUnit::bindInput(DspUnit* dsp, const unsigned int &mySlot,
+                        const unsigned int itsSlot)
+{
+  if (m_inSlots[mySlot] != 0) delete m_inSlots[mySlot];
+  m_inSlots[mySlot] = dsp->m_inSlots[itsSlot];
+  m_bindedSlots[mySlot] = true;
+}
+
+void DspUnit::bindOutput(SlotData* data, const unsigned int &slot)
+{
+  m_outSlots[slot] = data;
 }

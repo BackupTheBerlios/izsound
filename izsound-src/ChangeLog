@@ -1,7 +1,12 @@
 [ IzSound x.y.z ] (2003.xx.yy) release-x-y-z
 
-2003.09.28 (Julien Ponge):
+2003.10.04 (Julien Ponge):
+* New fragmenter unit.
+* Small fixes.
+* The DSP slots can now be binded (use with care !).
+* New Flanger DSP. It is far from beeing functionnal though.
 
+2003.09.28 (Julien Ponge):
 * DeMultiplexer: better chaining checking fix.
 
 [ IzSound 0.0.2 ] (2003.09.27) release-0-0-2
