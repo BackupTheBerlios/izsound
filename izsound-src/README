@@ -44,7 +44,7 @@ If you plan to contribute to the project, you can do it by sending patches or
 new files. Please make it available under a free software license such as the
 BSD, X11 or Zlib/PNG license. The GNU GPL would not be very much appreciated
 for a DSP unit, but it is not a problem if it makes use of a GPL-covered
-license.
+library.
 
 The goal is that IzSound stays a non-copyleft free software library, so this is
 why there is a requirement for non-copyleft DSP units. But as mentionned above,
