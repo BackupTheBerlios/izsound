@@ -87,7 +87,7 @@ public:
    *
    * @param frequency The flanger frequency.
    * @param amplitude The effect amplitude.
-   * @param wet The wet/dry ratio.
+   * @param wet The wet ratio in the [0, 1] range.
    * @param sampleRate The audio chain sample rate.
    */
   Flanger(const double &frequency = 0.5,
