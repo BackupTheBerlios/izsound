@@ -6,3 +6,8 @@ the maintainer so that it gets corrected.
 
 The BandFilter unit is built using the formulas of their respective butterworth
 effects implementation.
+
+[ Bertrand Petit ]
+
+The MadDecoder unit has been built using the madlld example located at
+http://www.bsd-dk.dk/~elrond/audio/madlld/ .
