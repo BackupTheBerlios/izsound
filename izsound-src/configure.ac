@@ -13,6 +13,8 @@ AC_PROG_MAKE_SET
 # Checks for libraries.
 XIPH_PATH_OGG([], AC_MSG_ERROR([Ogg libraries not found.]))
 XIPH_PATH_VORBIS([], AC_MSG_ERROR([Vorbis libraries not found.]))
+
+# LibAO library
 AC_ARG_ENABLE(libao_dsp,
               AC_HELP_STRING([--disable-libao_dsp],
                              [Don't use the libao features]),
@@ -26,6 +28,22 @@ if test x${uselibao} = xtrue; then
   XIPH_PATH_AO([], AC_MSG_ERROR([libao not found.]))
 fi
 AM_CONDITIONAL(USE_LIBAO, test x${uselibao} = xtrue)
+
+# LibMad library
+AC_ARG_ENABLE(libmad_dsp,
+              AC_HELP_STRING([--disable-libmad_dsp],
+                             [Don't use the libmad features]),
+              [case ${enableval} in
+                yes) uselibmad=true;;
+                no)  uselibmad=false;;
+                *) AC_MSG_ERROR([bad value ${enableval} for --disable-libmad_dsp]);;
+               esac],
+              [uselibmad=true])
+if test x${uselibmad} = xtrue; then
+  AC_CHECK_HEADER([mad.h], [], AC_MSG_ERROR([mad.h not found.]))
+  AC_CHECK_LIB([mad], [main], [], AC_MSG_ERROR([libmad not found.]))
+fi
+AM_CONDITIONAL(USE_LIBMAD, test x${uselibmad} = xtrue)
 
 # Checks for header files.
 AC_HEADER_STDC

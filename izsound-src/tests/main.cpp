@@ -53,6 +53,7 @@
 #include <datapicker.h>
 #include <crossfader.h>
 #include <bandfilter.h>
+#include <maddecoder.h>
 #include <libaooutput.h>
 #include <demultiplexer.h>
 #include <oggfiledecoder.h>
@@ -77,6 +78,7 @@ void flanger();
 void picker();
 void bandfilter();
 void connexions();
+void madplay();
 
 /**
  * The program entry-point.
@@ -121,6 +123,8 @@ int main(int argc, char** argv)
             "\n  (needs a file named track.ogg)" << endl
          << "- connexions: OggFileDecoder + (BandFilter | Flanger) + "
             "LibaoOutput\n  (needs a file named track.ogg)" << endl
+         << "- madplay: MadDecoder + LibaoOutput"
+            "\n  (needs a file named track.mp3)" << endl
          << endl;
     exit(0);
   }
@@ -158,6 +162,8 @@ int main(int argc, char** argv)
       bandfilter();
     else if (strcmp(argv[i], "connexions") == 0)
       connexions();
+    else if (strcmp(argv[i], "madplay") == 0)
+      madplay();
   }
 
   return 0;
@@ -802,6 +808,43 @@ void connexions()
     decoder.run();
   }
 
+  // Cleanups
+  ao.flush();
+}
+
+/**
+ * MadDecoder test.
+ */
+void madplay()
+{
+  // Init
+  cout << endl << "[ madplay ]" << endl << endl;
+  bool success;
+  MadDecoder decoder("track.mp3", success);
+  if (!success)
+  {
+    cout << "Mad initialisation failed." << endl;
+    return;
+  }
+  LibaoOutput ao("oss", 0, success);
+  if (!success)
+  {
+    cout << "Could not initialise OSS/LibAO." << endl;
+    return;
+  }
+
+  // Connection
+  decoder.connect(&ao, 0, 0);
+
+  // Let's roll baby !
+  while (!decoder.isEndReached())
+  {
+    decoder.run();
+  }
+  for (int i = 0; i < 10; ++i)
+  {
+    decoder.run();
+  }
 
   // Cleanups
   ao.flush();

@@ -46,6 +46,11 @@ if MAKE_OSS_DSP
   INCZ += izsound/ossoutput.h
 endif
 
+if USE_LIBMAD
+  SRCZ += maddecoder.cpp
+  INCZ += izsound/maddecoder.h
+endif
+
 lib_LTLIBRARIES = libstdizdsp.la
 libstdizdsp_la_LDFLAGS  = -release @PACKAGE_VERSION@
 libstdizdsp_la_SOURCES  = ${SRCZ}

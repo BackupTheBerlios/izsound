@@ -1,5 +1,12 @@
 [ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
 
+2003.12.29 (Julien Ponge):
+* OggFileDecoder: the decoder goes in 'STOP' mode when the end of the file is
+  reached.
+* IzSound manual: an appendix for the third-party codes has been added.
+* New MadDecoder DSP unit. It is working but some methods of the 'Player'
+  interface are not yet implemented.
+
 2003.12.28 (Julien Ponge):
 * oggfiledecoder.h: comments fixes.
 

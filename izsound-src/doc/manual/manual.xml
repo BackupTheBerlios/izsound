@@ -19,6 +19,7 @@
 <!ENTITY intro SYSTEM "intro.xml">
 <!ENTITY dsp SYSTEM "dsp.xml">
 <!ENTITY code-samples SYSTEM "code-samples.xml">
+<!ENTITY third-party SYSTEM "third-party.xml">
 
 <!ENTITY sample-dsp-h SYSTEM "sample-dsp.h.xml">
 <!ENTITY sample-dsp-cpp SYSTEM "sample-dsp.cpp.xml">
@@ -57,6 +58,8 @@
   &code-samples;
   
 </part>
+
+&third-party;
 
 </book>
 

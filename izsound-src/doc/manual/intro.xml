@@ -70,6 +70,7 @@
   
   <para>You must be aware that although IzSound is released under a BSD-style license, some DSP
   units might require a library which is released under a license which has more constraints.
+  It may also use third-party code published on a more restrictive license.
   Those DSP units can be disabled by the <filename>configure</filename> script before you build
   IzSound. The following table sums-up the licensing constraints put on the applications that use
   IzSound.
@@ -85,6 +86,10 @@
       <tbody>
         <row>
           <entry><para><classname>LibaoOutput</classname></para></entry>
+          <entry><para>GNU GPL</para></entry>
+        </row>
+        <row>
+          <entry><para><classname>MadDecoder</classname></para></entry>
           <entry><para>GNU GPL</para></entry>
         </row>
         <row>

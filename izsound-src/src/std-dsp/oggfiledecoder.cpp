@@ -91,6 +91,10 @@ void OggFileDecoder::playNextChunk()
   long nread = ov_read(m_oggFile, m_readBuffer, (int)m_readBufferSize,
                        0, 2, 1, &bitstream);
   m_endReached = (nread == 0);
+  if (m_endReached)
+  {
+    stop();
+  }
   SlotData* output = m_outSlots[0];
   (*output)[0].clear();
   (*output)[1].clear();

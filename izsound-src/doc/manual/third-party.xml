@@ -1,0 +1,97 @@
+<!--
+
+  IzSound manual
+  
+  Copyright (c) 2003 Julien PONGE. All Rights Reserved.
+  
+  http://www.izforge.com/
+  <julien@izforge.com>
+  <julien_ponge@yahoo.fr>
+
+  :xml.root=manual.xml:
+  
+-->
+
+<appendix id="thirdparty">
+
+  <title>Third-party code</title>
+  
+  <para>IzSound makes use of some third-party code. A big 'thank you' to their respective authors.
+  Here is the list of these third-party codes as well as their copyright notices.</para>
+  
+  <itemizedlist>
+  
+    <listitem><para>The <classname>MadDecoder</classname> class is based on the
+    <filename>madldd.c</filename> program from Bertrand Petit.</para>
+    <screen><![CDATA[
+/****************************************************************************
+ * madlld.c -- A simple program decoding an mpeg audio stream to 16-bit     *
+ * PCM from stdin to stdout. This program is just a simple sample           *
+ * demonstrating how the low-level libmad API can be used.                  *
+ *--------------------------------------------------------------------------*
+ * (c) 2001, 2002 Bertrand Petit                                            *
+ *                                                                          *
+ * Redistribution and use in source and binary forms, with or without       *
+ * modification, are permitted provided that the following conditions       *
+ * are met:                                                                 *
+ *                                                                          *
+ * 1. Redistributions of source code must retain the above copyright        *
+ *    notice, this list of conditions and the following disclaimer.         *
+ *                                                                          *
+ * 2. Redistributions in binary form must reproduce the above               *
+ *    copyright notice, this list of conditions and the following           *
+ *    disclaimer in the documentation and/or other materials provided       *
+ *    with the distribution.                                                *
+ *                                                                          *
+ * 3. Neither the name of the author nor the names of its contributors      *
+ *    may be used to endorse or promote products derived from this          *
+ *    software without specific prior written permission.                   *
+ *                                                                          *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS''       *
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED        *
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A          *
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR       *
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,             *
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT         *
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF         *
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND      *
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,       *
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT       *
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF       *
+ * SUCH DAMAGE.                                                             *
+ *                                                                          *
+ ****************************************************************************/
+
+]]></screen>
+    </listitem>
+    
+    <listitem><para>The <classname>MadDecoder</classname> class makes use of the
+    <function>scale()</function> function from the <filename>minimad.c</filename> example file
+    provided with the Mad library sources. The GNU GPL terms are provided in the IzSound
+    sources distribution in the <filename>COPYING.GPL</filename> file.</para>
+    <screen><![CDATA[
+/*
+ * libmad - MPEG audio decoder library
+ * Copyright (C) 2000-2003 Underbit Technologies, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+]]></screen>
+    </listitem>
+  
+  </itemizedlist>
+  
+</appendix>
