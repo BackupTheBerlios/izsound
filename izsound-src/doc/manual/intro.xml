@@ -1,0 +1,101 @@
+<!-- 
+  IzSound manual
+  
+  Copyright (c) 2003 Julien PONGE. All Rights Reserved.
+  
+  http://www.izforge.com/
+  <julien@izforge.com>
+  <julien_ponge@yahoo.fr>
+
+  :xml.root=manual.xml:
+ -->
+
+<chapter id="intro">
+<title>Introduction</title>
+
+<sect1>
+
+  <title>IzSound overview</title>
+  
+  <para>IzSound is a stream-oriented sound processing library. It has been designed
+  around small DSP units that can be chained together to operate on the sound data
+  stream. While there are already several libraries of this kind, most of them are
+  either too simplists or too complicated. What's more, they are often written in
+  the C programming language and lead to libraries having a lot of functions and
+  data structures. Using an object oriented language can dramatically ease the
+  learning process by having a clearer overview.</para>
+  
+  <para>That's why IzSound is written in C++ in order to use the object oriented
+  paradigms. Moreover, the C++ STL brings the concepts of generic programming and
+  IzSound makes an intensive use of both the containers and the algorithms brought
+  by the STL. This way it is built on both well tested data containers and
+  algorithmic bricks.</para>
+  
+  <para>IzSound in itself is a very small library containing the <classname>DspUnit</classname>
+  class. It embeds the chaining and streaming logic of the DSP units. There is another library
+  named stdizdsp which contains a set of DSP units covering various domains (OGG files reading,
+  crossfading, pitching and so on).</para>
+  
+</sect1>
+
+<sect1>
+
+  <title>Internet resources</title>
+  
+  <para>The official IzSound homepage is located at
+  <ulink url="http://www.izforge.com/izsound/">http://www.izforge.com/izsound/</ulink>.
+  Some developper services are provided by BerliOS:
+  <itemizedlist>
+    <listitem><para>bugs tracking</para></listitem>
+    <listitem><para>patchs management</para></listitem>
+    <listitem><para>tasks management</para></listitem>
+    <listitem><para>CVS repository</para></listitem>
+    <listitem><para>files releases</para></listitem>
+  </itemizedlist>
+  </para>
+  
+  <para>The source code releases are available from BerliOS as <filename>.tar.bz2</filename>
+  files. It is always distributed along with an MD5 checksum as well as a GnuPG signature.</para>
+
+</sect1>
+
+<sect1>
+
+  <title>Licensing</title>
+  
+  <para>IzSound is distributed under a 2 clauses BSD-style license. Here are the exact terms of
+  the license agreement:
+  <screen>&izsound-license;</screen>
+  </para>
+  
+  <para>You must be aware that although IzSound is released under a BSD-style license, some DSP
+  units might require a library which is released under a license which has more constraints.
+  Those DSP units can be disabled by the <filename>configure</filename> script before you build
+  IzSound. The following table sums-up the licensing constraints put on the applications that use
+  IzSound.
+  <table>
+    <title>Licensing constraints, depending on the DSP that are built in IzSound</title>
+    <tgroup cols="2">
+      <thead>
+        <row>
+          <entry><para>DSP unit</para></entry>
+          <entry><para>Licensing constraints</para></entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry><para><classname>LibaoOutput</classname></para></entry>
+          <entry><para>GNU GPL</para></entry>
+        </row>
+        <row>
+          <entry><para>Other units</para></entry>
+          <entry><para>IzSound license</para></entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+  </para>
+
+</sect1>
+
+</chapter>

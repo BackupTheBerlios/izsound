@@ -1,0 +1,70 @@
+<!-- 
+  IzSound manual
+  
+  Copyright (c) 2003 Julien PONGE. All Rights Reserved.
+  
+  http://www.izforge.com/
+  <julien@izforge.com>
+  <julien_ponge@yahoo.fr>
+
+  :xml.root=manual.xml:
+ -->
+
+<chapter id="sample-make-dsp">
+  <title>Making a DSP unit</title>
+  
+  <para>The following sample DSP unit is an extract from the <classname>Fragmenter</classname>
+  unit. You can see that it is extremely easy to implement a new DSP. All you need is a good
+  editor, the IzSound APIs in a browser and a little bit of C++/STL knowledge.</para>
+  
+  <sect1>
+    <title>The header file</title>
+    <programlisting linenumbering="numbered">
+&sample-dsp-h;
+    </programlisting>
+  </sect1>
+  
+  <sect1>
+    <title>The implementation file</title>
+    <programlisting linenumbering="numbered">
+&sample-dsp-cpp;
+    </programlisting>
+  </sect1>
+
+</chapter>
+
+<chapter id="sample-use-dsp">
+  <title>Using some DSP units together</title>
+  
+  <sect1>
+    <title>Playing a pitched sound</title>
+    <para>In this example, we show how easy it is to play an OGG file with a pitching effect
+    applied to it.</para>
+    <figure>
+    <title>Playing a pitched sound - DSP chain</title>
+    <mediaobject>
+      <imageobject><imagedata fileref="sample-pitch.png" format="PNG"/></imageobject>
+    </mediaobject>
+  </figure>
+    <programlisting linenumbering="numbered">
+&sample-pitched-cpp;    
+    </programlisting>
+  </sect1>
+  
+  <sect1>
+    <title>Playing with the connections</title>
+    <para>In this example, we show how you can connect and disconnect DSP units. It either
+    applies a sound pitching effect or a band filtering effect. Periodicallty, the DSP that is
+    used is disconnected and the other one takes the place in the chain.</para>
+    <figure>
+    <title>Playing with the connections - DSP chain</title>
+    <mediaobject>
+      <imageobject><imagedata fileref="sample-connections.png" format="PNG"/></imageobject>
+    </mediaobject>
+  </figure>
+    <programlisting linenumbering="numbered">
+&sample-connection-cpp;    
+    </programlisting>
+  </sect1>
+
+</chapter>

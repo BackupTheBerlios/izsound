@@ -1,0 +1,90 @@
+<!-- 
+  IzSound manual
+  
+  Copyright (c) 2003 Julien PONGE. All Rights Reserved.
+  
+  http://www.izforge.com/
+  <julien@izforge.com>
+  <julien_ponge@yahoo.fr>
+
+  :xml.root=manual.xml:
+ -->
+
+<chapter id="dsp">
+<title>The DSP units</title>
+
+<sect1>
+
+  <title>Overview</title>
+  
+  <figure>
+    <title>A DSP unit</title>
+    <mediaobject>
+      <imageobject><imagedata fileref="dsp.png" format="PNG"/></imageobject>
+    </mediaobject>
+  </figure>
+  
+  <para>The way that the DSP units work is very simple. The sound stream is made of samples,
+  represented by floating-point values in the [-1.0, 1.0] range. Each unit has some input and
+  output slots. A slot is made to transmit the data from/to a DSP unit. The number of these slots
+  depend of the DSP unit. These numbers are fixed and are 0-based.</para>
+  
+  <para>A DSP unit can be connected to other ones by connecting one of its output slot to one
+  input slot of another DSP unit. The whole process is actually very simple. Once the connections
+  are established, you can use the DSP construction that you have made.</para>
+  
+  <figure>
+    <title>A typical DSP chaining</title>
+    <mediaobject>
+      <imageobject><imagedata fileref="sample-chain.png" format="PNG"/></imageobject>
+    </mediaobject>
+  </figure>
+
+</sect1>
+
+<sect1>
+
+  <title>Making it work</title>
+  
+  <para>Once you have connected your DSP units, you certainly want to make it run. The way it works
+  in IzSound is pretty simple. All you have to do is to invoke the <methodname>run()</methodname>
+  method of all of your source DSP units. By "source DSP units", you must understand "the units
+  that have no input".</para>
+  
+  <para>Once you have invoked the <methodname>run()</methodname> method of all the source DSP
+  units, the sound stream will be propaged to the subsequent ones and so on until the final units.
+  Most of the time, the final units play or record the sound.</para>
+  
+  <para>To produce a continuous sound flow, you simply have to iterate on calling the
+  <methodname>run()</methodname> methods. Working with IzSound is that simple.</para>
+
+</sect1>
+
+<sect1>
+
+  <title>Implementing your DSP units</title>
+  
+  <para>Implementing your DSP units is quite simple. Indeed, you just have to concentrate on the
+  actual sound data processing work. All the chaining logic is embedded in the
+  <classname>DspUnit</classname> class. Every unit inherits from <classname>DspUnit</classname>.
+  </para>
+  
+  <para>The <methodname>run()</methodname> method of <classname>DspUnit</classname> invokes a
+  virtual protected method named <methodname>performDsp()</methodname>. This method is of type
+  <type>void</type> and takes no parameter. This is where you have to perform your job.</para>
+  
+  <para>The data that you can get from the input slots is available from the
+  <varname>m_inputSlots</varname> attribute. It is a vector of pointers to
+  <classname>SlotData</classname> instances. A <classname>SlotData</classname> is actually an
+  instance of a <classname>deque&lt;double&gt;</classname> template. You should refer top the API
+  for more informations.</para>
+  
+  <para>On the same way, the output slots are available through the <varname>m_outputSlots</varname>
+  attribute, which is in fact the input slot of the next DSP unit it is connected to. Everytime the
+  <methodname>performDsp()</methodname> method is invoked, you have 'fresh' data in the input slots.
+  A DSP unit is expected to manually clear the output slots data before putting the processed data
+  in.</para>
+  
+</sect1>
+
+</chapter>

@@ -1,0 +1,52 @@
+<![CDATA[#include <fragmenter.h>
+
+using namespace std;
+using namespace izsound;
+
+Fragmenter::Fragmenter(const unsigned int &length,
+                       const unsigned int &sampleRate)
+  : DspUnit(sampleRate, 1, 1)
+{
+  m_buffer.resize(2);
+  setLength(length);
+}
+
+Fragmenter::~Fragmenter()
+{
+
+}
+
+void Fragmenter::performDsp()
+{
+  // Inits
+  SlotData *input  = m_inSlots[0];
+  SlotData *output = m_outSlots[0];
+
+  // We copy to the buffer
+  back_insert_iterator<deque<double> > biLeft1(m_buffer[0]);
+  back_insert_iterator<deque<double> > biRight1(m_buffer[1]);
+  copy((*input)[0].begin(), (*input)[0].end(), biLeft1);
+  copy((*input)[1].begin(), (*input)[1].end(), biRight1);
+
+  // We deliver the data
+  (*output)[0].clear();
+  (*output)[1].clear();
+  if (m_buffer[0].size() > m_trigger)
+  {
+    back_insert_iterator<deque<double> > biLeft2((*output)[0]);
+    back_insert_iterator<deque<double> > biRight2((*output)[1]);
+    copy(m_buffer[0].begin(), m_buffer[0].begin() + m_trigger, biLeft2);
+    copy(m_buffer[1].begin(), m_buffer[1].begin() + m_trigger, biRight2);
+    for (unsigned int i = 0; i < m_trigger; ++i)
+    {
+      m_buffer[0].pop_front();
+      m_buffer[1].pop_front();
+    }
+  }
+}
+
+void Fragmenter::setLength(const unsigned int &length)
+{
+  m_trigger = (m_sampleRate * length) / 1000;
+}
+]]>

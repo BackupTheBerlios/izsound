@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+  IzSound manual
+  
+  Copyright (c) 2003 Julien PONGE. All Rights Reserved.
+  
+  http://www.izforge.com/
+  <julien@izforge.com>
+  <julien_ponge@yahoo.fr>
+
+-->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+ "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"
+[
+
+<!ENTITY intro SYSTEM "intro.xml">
+<!ENTITY dsp SYSTEM "dsp.xml">
+<!ENTITY code-samples SYSTEM "code-samples.xml">
+
+<!ENTITY sample-dsp-h SYSTEM "sample-dsp.h.xml">
+<!ENTITY sample-dsp-cpp SYSTEM "sample-dsp.cpp.xml">
+<!ENTITY sample-pitched-cpp SYSTEM "sample-pitched.cpp.xml">
+<!ENTITY sample-connection-cpp SYSTEM "sample-connection.cpp.xml">
+
+<!ENTITY izsound-license SYSTEM "../../COPYING">
+
+]>
+
+<book>
+
+<bookinfo>
+  <title>IzSound manual</title>
+  <copyright><year>2003</year><holder>Julien PONGE</holder></copyright>
+  <legalnotice>
+    <title>Legal notice</title>
+    <para>This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike
+    License. To view a copy of this license, visit
+    <ulink url="http://creativecommons.org/licenses/by-nc-sa/1.0/">http://creativecommons.org/licenses/by-nc-sa/1.0/</ulink>
+    or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.</para>
+  </legalnotice>
+</bookinfo>
+
+<part>
+  <title>Understanding IzSound</title>
+  
+  &intro;
+  &dsp;
+  
+</part>  
+
+<part>
+  <title>Examples</title>
+
+  &code-samples;
+  
+</part>
+
+</book>
+

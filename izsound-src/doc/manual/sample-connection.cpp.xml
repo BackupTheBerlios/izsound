@@ -1,0 +1,54 @@
+<![CDATA[void connexions()
+{
+  // Init
+  bool success;
+  OggFileDecoder decoder("track.ogg", success);
+  if (!success)
+  {
+    cout << "OGG initialisation failed." << endl;
+    return;
+  }
+  LibaoOutput ao("oss", 0, success);
+  if (!success)
+  {
+    cout << "Could not initialise OSS/LibAO." << endl;
+    return;
+  }
+  Flanger flanger;
+  BandFilter filter;
+
+  // Connection
+  decoder.connect(&flanger, 0, 0);
+  flanger.connect(&ao, 0, 0);
+
+  // Let's roll baby !
+  unsigned int cpt = 0;
+  while (!decoder.isEndReached())
+  {
+    decoder.run();
+    if (++cpt % 1500 == 0)
+    {
+      decoder.disconnect(0);
+      flanger.disconnect(0);
+      decoder.connect(&filter, 0, 0);
+      filter.connect(&ao, 0, 0);
+      flanger.reset();
+    }
+    else if (cpt % 750 == 0)
+    {
+      decoder.disconnect(0);
+      filter.disconnect(0);
+      decoder.connect(&flanger, 0, 0);
+      flanger.connect(&ao, 0, 0);
+    }
+  }
+  for (int i = 0; i < 10; ++i)
+  {
+    decoder.run();
+  }
+
+
+  // Cleanups
+  ao.flush();
+}
+]]>

@@ -1,0 +1,34 @@
+<![CDATA[#ifndef MYDSP_H
+#define MYDSP_H
+
+#include <iterator>
+#include <algorithm>
+
+#include <dspunit.h>
+
+using namespace std;
+using namespace izsound;
+
+class Fragmenter : public DspUnit
+{
+private:
+
+  SlotData m_buffer;
+  unsigned int m_trigger;
+
+protected:
+
+  virtual void performDsp();
+
+public:
+
+  Fragmenter(const unsigned int &length,
+             const unsigned int &sampleRate = 44100);
+
+  virtual ~Fragmenter();
+
+  void setLength(const unsigned int &length);
+};
+
+#endif
+]]>

@@ -1,0 +1,35 @@
+<![CDATA[void pitchplay()
+{
+  // Init
+  bool success;
+  OssOutput oss(success);
+  if (!success)
+  {
+    cout << "OSS output initialisation failed." << endl;
+    return;
+  }
+  OggFileDecoder decoder("track.ogg", success);
+  if (!success)
+  {
+    cout << "OGG initialisation failed." << endl;
+    return;
+  }
+  Pitch pitch(0.75);
+
+  // Connection
+  decoder.connect(&pitch, 0, 0);
+  pitch.connect(&oss, 0, 0);
+
+  // Let's play
+  while (!decoder.isEndReached())
+  {
+    decoder.run();
+  }
+
+  // We ensure that we flush all the data that can still be in the chain
+  for (int i = 0; i < 10; ++i)
+  {
+    decoder.run(); 
+  }
+}
+]]>
