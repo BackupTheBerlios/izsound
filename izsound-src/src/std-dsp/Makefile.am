@@ -4,7 +4,8 @@ SRCZ = blackhole.cpp \
        pitch.cpp \
        silencer.cpp \
        volume.cpp \
-       delayextrastereo.cpp
+       delayextrastereo.cpp \
+       demultiplexer.cpp
 
 INCZ = izsound/blackhole.h \
        izsound/crossfader.h \
@@ -12,7 +13,8 @@ INCZ = izsound/blackhole.h \
        izsound/pitch.h \
        izsound/silencer.h \
        izsound/volume.h \
-       izsound/delayextrastereo.h
+       izsound/delayextrastereo.h \
+       izsound/demultiplexer.h
 
 LIBZ = ${top_builddir}/src/izsound/libizsound.la \
        @VORBIS_LIBS@ \

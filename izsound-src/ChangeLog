@@ -3,6 +3,8 @@
 2003.09.27 (Julien Ponge):
 * Added a new DSP DelayExtraStereo that applies a well-know stereo expansion
   effect by delaying one of the two stereo channels.
+* Added a new DSP DeMultiplexer that duplicates an input stream to several
+  output streams.
 
 2003.09.22 (Julien Ponge):
 * Modified the bootstrapping process to call autoheader before automake.

@@ -49,6 +49,7 @@
 #include <blackhole.h>
 #include <crossfader.h>
 #include <libaooutput.h>
+#include <demultiplexer.h>
 #include <oggfiledecoder.h>
 #include <delayextrastereo.h>
 
@@ -66,6 +67,7 @@ void aoplayoss();
 void oggseek();
 void aowritefile();
 void delayextrastereo();
+void demultiplexer();
 
 /**
  * The program entry-point.
@@ -99,6 +101,8 @@ int main(int argc, char** argv)
          << "- delayextrastereo : OggFileDecoder + DelayExtraStereo "
             "+ LibaoOutput"
             "\n  (needs a file named track.ogg)" << endl
+         << "- demultiplexer : OggFileDecoder + DeMultiplexer + LibaoOutput * 2"
+            "\n  (needs a file named track.ogg)" << endl
          << endl;
       exit(0);
   }
@@ -124,6 +128,8 @@ int main(int argc, char** argv)
       aowritefile();
     else if (strcmp(argv[i], "delayextrastereo") == 0)
       delayextrastereo();
+    else if (strcmp(argv[i], "demultiplexer") == 0)
+      demultiplexer();
   }
 
   return 0;
@@ -450,7 +456,7 @@ void aowritefile()
   LibaoOutput ao("wav", 0, "aowritefile.wav", success);
   if (!success)
   {
-    cout << "Could not initialise OSS/LibAO." << endl;
+    cout << "Could not initialise Wav/LibAO." << endl;
     return;
   }
 
@@ -468,7 +474,7 @@ void aowritefile()
 }
 
 /**
- * LibaoOutput DSP test with the OSS driver.
+ * DelayExtraStereo test.
  */
 void delayextrastereo()
 {
@@ -501,4 +507,49 @@ void delayextrastereo()
 
   // Cleanups
   ao.flush();
+}
+
+/**
+ * DeMultiplexer test.
+ */
+void demultiplexer()
+{
+  // Init
+  cout << endl << "[ demultiplexer ]" << endl << endl;
+  bool success;
+  OggFileDecoder decoder("track.ogg", success);
+  if (!success)
+  {
+    cout << "OGG initialisation failed." << endl;
+    return;
+  }
+  LibaoOutput aoPlay("oss", 0, success);
+  if (!success)
+  {
+    cout << "Could not initialise OSS/LibAO." << endl;
+    return;
+  }
+  LibaoOutput aoWrite("wav", 0, "aowritefile.wav", success);
+  if (!success)
+  {
+    cout << "Could not initialise Wav/LibAO." << endl;
+    return;
+  }
+  DeMultiplexer demux(3); // One is useless, we just make sure there aren't
+                          // bugs in this case.
+
+  // Connection
+  decoder.connect(&demux, 0, 0);
+  demux.connect(&aoPlay, 0, 0);
+  demux.connect(&aoWrite, 1, 0);
+
+  // Let's roll baby !
+  while (!decoder.isEndReached())
+  {
+    decoder.run();
+  }
+
+  // Cleanups
+  aoPlay.flush();
+  aoWrite.flush();
 }
