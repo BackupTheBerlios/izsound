@@ -1,4 +1,7 @@
-[ IzSound x.y.z ] (2003.xx.yy) release-x-y-z
+[ IzSound 0.0.3 ] (2003.10.28) release-0-0-3
+
+2003.10.28 (Julien Ponge):
+* New IzSound release.
 
 2003.10.20 (Julien Ponge):
 * OssOutput and LibaoOutput should (hopefully !) be portable on big-endian
