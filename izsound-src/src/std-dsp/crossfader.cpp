@@ -33,6 +33,26 @@
 using namespace std;
 using namespace izsound;
 
+/*
+ * Binary functor that mixes 2 samples against factors.
+ */
+struct Mixer_OF
+{
+  double f1;
+  double f2;
+
+  Mixer_OF(const double &a, const double &b)
+  {
+    f1 = a;
+    f2 = b;
+  }
+
+  double operator() (const double &x, const double &y)
+  {
+    return (x * f1) + (y * f2);
+  }
+};
+
 CrossFader::CrossFader(const double &pos, const unsigned int &sampleRate)
   : DspUnit(sampleRate, 2, 1)
 {

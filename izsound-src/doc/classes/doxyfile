@@ -138,7 +138,7 @@ DISTRIBUTE_GROUP_DOC   = NO
 # The TAB_SIZE tag can be used to set the number of spaces in a tab. 
 # Doxygen uses this value to replace tabs by spaces in code fragments.
 
-TAB_SIZE               = 2
+TAB_SIZE               = 8
 
 # This tag can be used to specify a number of aliases that acts 
 # as commands in the documentation. An alias has the form "name=value". 
@@ -211,7 +211,7 @@ HIDE_UNDOC_MEMBERS     = NO
 # If set to NO (the default) these classes will be included in the various 
 # overviews. This option has no effect if EXTRACT_ALL is enabled.
 
-HIDE_UNDOC_CLASSES     = NO
+HIDE_UNDOC_CLASSES     = YES
 
 # If the HIDE_FRIEND_COMPOUNDS tag is set to YES, Doxygen will hide all 
 # friend (class|struct|union) declarations. 
@@ -370,8 +370,7 @@ INPUT                  = ../../src
 # *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx *.hpp 
 # *.h++ *.idl *.odl *.cs *.php *.php3 *.inc
 
-FILE_PATTERNS          = *.h \
-                         *.cpp
+FILE_PATTERNS          = *.h *.cpp
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 

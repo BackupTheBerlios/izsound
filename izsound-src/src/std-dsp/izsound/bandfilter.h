@@ -53,7 +53,7 @@
 namespace izsound
 {
 
-/**
+/*
  * Used internally by the <code>BandFilter</code> class.
  */
 typedef struct butterworth

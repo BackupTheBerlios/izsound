@@ -1,7 +1,7 @@
 /*
  * IzSound - Copyright (c) 2003, 2004 Julien Ponge - All rights reserved.
  *
- * White noise DSP unit - Copyright (c) 2004 Karl Pitrich
+ * WhiteNoise DSP unit - Copyright (c) 2004 Karl Pitrich
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
