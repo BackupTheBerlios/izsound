@@ -12,10 +12,10 @@ echo -e "Running aclocal ...\t"
 aclocal 
 echo -e "Running libtoolize ...\t"
 libtoolize -f --automake --copy 
+echo -e "Running autoheader ...\t"
+autoheader 
 echo -e "Running automake ...\t"
 automake -a -c --foreign 
 echo -e "Running autoconf ...\t"
 autoconf 
-echo -e "Running autoheader ...\t"
-autoheader 
 echo -e "\nThe package is now ready to be built :-)"

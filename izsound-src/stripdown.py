@@ -45,6 +45,7 @@ names = ["Makefile.in",
          "install-sh",
          "ltmain.sh",
          "missing",
+         "config.h.in",
          "mkinstalldirs"]
 
 # Directory cleaner
