@@ -1,3 +1,9 @@
+[ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
+
+2003.12.26 (Julien Ponge):
+* Added a new 'reset()' method to the DspUnit class.
+* DataPicker and Flanger redefine their own 'reset()' method.
+
 [ IzSound 0.0.6 ] (2003.12.19) release-0-0-6
 
 2003.12.19 (Julien Ponge):

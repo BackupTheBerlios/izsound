@@ -66,3 +66,16 @@ void DataPicker::performDsp()
     (*output)[1].push_back(right);
   }
 }
+
+void DataPicker::reset()
+{
+  // Why aren't there clear() methods for a queue ???
+  while (!m_leftQueue.empty())
+  {
+    m_leftQueue.pop();
+  }
+  while (!m_leftQueue.empty())
+  {
+    m_rightQueue.pop();
+  }
+}

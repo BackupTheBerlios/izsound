@@ -46,6 +46,7 @@ Flanger::Flanger(const double &frequency,
 {
   // Init
   m_internalState = INIT_STATE;
+  m_samplesCounter = 0;
   m_originalBuffer.resize(2);
   m_pitchedBuffer.resize(2);
   setFrequency(frequency);
@@ -64,7 +65,6 @@ void Flanger::performDsp()
   unsigned int i;
   unsigned int j;
   unsigned int k;
-  static unsigned int samplesCounter = 0;
   SlotData* input  = m_inSlots[0];
   SlotData* output = m_outSlots[0];
   (*output)[0].clear();
@@ -73,7 +73,7 @@ void Flanger::performDsp()
   back_insert_iterator<deque<double> > biRight1(m_originalBuffer[1]);
   back_insert_iterator<deque<double> > biLeft2(m_pitchedBuffer[0]);
   back_insert_iterator<deque<double> > biRight2(m_pitchedBuffer[1]);
-  
+
   // We copy to the internal buffers
   copy((*input)[0].begin(), (*input)[0].end(), biLeft1);
   copy((*input)[1].begin(), (*input)[1].end(), biRight1);
@@ -129,32 +129,32 @@ void Flanger::performDsp()
     {
     case INIT_STATE:
       // We must pitch up during half a period
-      if ((++samplesCounter % m_pitchTrigger) == 0)
+      if ((++m_samplesCounter % m_pitchTrigger) == 0)
       {
         if (j < psize - 1)
         {
           ++j;
         }
       }
-      if ((samplesCounter % m_halfPeriodSamplesCount) == 0)
+      if ((m_samplesCounter % m_halfPeriodSamplesCount) == 0)
       {
-        samplesCounter  = 0;
+        m_samplesCounter  = 0;
         m_internalState = SLOW_STATE;
       }
       break;
 
     case FAST_STATE:
       // We must pitch up during a full period
-      if ((++samplesCounter % m_pitchTrigger) == 0)
+      if ((++m_samplesCounter % m_pitchTrigger) == 0)
       {
         if (j < psize - 1)
         {
           ++j;
         }
       }
-      if ((samplesCounter % m_periodSamplesCount) == 0)
+      if ((m_samplesCounter % m_periodSamplesCount) == 0)
       {
-        samplesCounter  = 0;
+        m_samplesCounter  = 0;
         m_internalState = SLOW_STATE;
         m_periodSamplesCount = m_periodNextSamplesCount;
       }
@@ -162,16 +162,16 @@ void Flanger::performDsp()
 
     case SLOW_STATE:
       // We must slow down during a full period
-      if ((++samplesCounter % m_pitchTrigger) == 0)
+      if ((++m_samplesCounter % m_pitchTrigger) == 0)
       {
         if (j > 0)
         {
           --j;
         }
       }
-      if ((samplesCounter % m_periodSamplesCount) == 0)
+      if ((m_samplesCounter % m_periodSamplesCount) == 0)
       {
-        samplesCounter  = 0;
+        m_samplesCounter  = 0;
         m_internalState = FAST_STATE;
       }
       break;
@@ -225,4 +225,15 @@ void Flanger::setWet(const double &wet)
   if (m_wet > 1.0) m_wet = 1.0;
   if (m_wet < 0.0) m_wet = 0.0;
   m_dry = 1.0 - m_wet;
+}
+
+void Flanger::reset()
+{
+  m_originalBuffer[0].clear();
+  m_originalBuffer[1].clear();
+  m_pitchedBuffer[0].clear();
+  m_pitchedBuffer[1].clear();
+
+  m_internalState  = INIT_STATE;
+  m_samplesCounter = 0;
 }

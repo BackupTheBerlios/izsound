@@ -131,6 +131,13 @@ public:
     return data;
   }
 
+  /**
+   * Resets the unit.
+   * Redefines <code>izsound::DspUnit::reset()</code>.
+   */
+  virtual void reset();
+
+
 };
 
 }

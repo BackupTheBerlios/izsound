@@ -59,7 +59,7 @@ private:
   
   /** The internal original data buffer. */
   SlotData m_originalBuffer;
-  
+
   /** The internal pitched data buffer. */
   SlotData m_pitchedBuffer;
   
@@ -74,7 +74,10 @@ private:
   
   /** The number of samples for a half period. */
   unsigned int m_halfPeriodSamplesCount;
-  
+
+  /** The internal samples counter. */
+  unsigned int m_samplesCounter;
+
   /** Tells the number of samples to process before a pitching is done. */
   unsigned int m_pitchTrigger;
 
@@ -149,6 +152,12 @@ public:
    * @param wet The new wet amount.
    */
   void setWet(const double &wet);
+
+  /**
+   * Resets the unit.
+   * Redefines <code>izsound::DspUnit::reset()</code>.
+   */
+  virtual void reset();
 
 };
 

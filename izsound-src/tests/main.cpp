@@ -787,6 +787,7 @@ void connexions()
       flanger.disconnect(0);
       decoder.connect(&filter, 0, 0);
       filter.connect(&ao, 0, 0);
+      flanger.reset();
     }
     else if (cpt % 750 == 0)
     {

@@ -204,6 +204,23 @@ public:
    */
   void bindOutput(SlotData* data, const unsigned int &slot);
 
+  /**
+   * Resets the DSP unit. By default, it will not do anything. However, some
+   * units can have some kind of state associated with them. For instance, it
+   * can have some internal buffer containing work-in-progress data. If the unit
+   * is disconnected and connected again latter, it will start working again
+   * with some older (and maybe inconsistant) data. That's why a reset makes
+   * sense.
+   *
+   * As a consequence, redefine this method if the DSP unit that you are
+   * developping could be affected by beeing used at discontinuous times because
+   * it maintains some kind of state.
+   *
+   * As a DSP units user, call this method on DSP units that redefine it
+   * whenever you take them out of a chain, but might put them back in later.
+   */
+  virtual void reset() {}
+
 };
 
 }
