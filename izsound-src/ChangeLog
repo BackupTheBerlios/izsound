@@ -1,5 +1,8 @@
 [ IzSound x.y.z ] (2003.xx.yy) release-x-y-z
 
+2003.11.22 (Julien Ponge):
+* OggFileDecoder: fix so that we don't get minor gcc warnings at compilation time.
+
 2003.11.21 (Julien Ponge):
 * The flanger is now fully working.
 * Added the 'const' qualifier for some DSP units methods.
