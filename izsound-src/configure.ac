@@ -1,5 +1,5 @@
 # Initialisations
-AC_INIT(IzSound, 0.0.4, julien@izforge.com)
+AC_INIT(IzSound, 0.0.5, julien@izforge.com)
 AC_CONFIG_SRCDIR(src/Makefile.am)
 AM_INIT_AUTOMAKE(dist-bzip2)
 AM_SANITY_CHECK

@@ -1,4 +1,8 @@
-[ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
+[ IzSound 0.0.5 ] (2003.11.30) release-0-0-5
+
+2003.11.30 (Julien Ponge):
+* The Doxygen file has been updated (doxygen -u doxyfile).
+* New IzSound release.
 
 2003.11.29 (Julien Ponge):
 * LibAOOutput: the driver can now be autodetected when passing 0 as the driver
