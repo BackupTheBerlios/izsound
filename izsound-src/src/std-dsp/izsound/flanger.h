@@ -54,6 +54,9 @@ private:
 
   /** The flanger wet ratio. */
   double m_wet;
+
+  /** The flanger dry ratio. */
+  double m_dry;
   
   /** The internal original data buffer. */
   SlotData m_originalBuffer;
@@ -87,9 +90,9 @@ public:
    * @param wet The wet/dry ratio.
    * @param sampleRate The audio chain sample rate.
    */
-  Flanger(const double &frequency = 1.0,
+  Flanger(const double &frequency = 0.5,
           const double &amplitude = 0.0001,
-          const double &wet = 0.2,
+          const double &wet = 0.5,
           const unsigned int &sampleRate = 44100);
 
   /**

@@ -93,72 +93,64 @@ void Flanger::performDsp()
     {
     case INIT_STATE:
       // We must pitch up during half a period
-      if ((samplesCounter % 30) == 0)
+      if ((samplesCounter % 60) == 0)
       {
         if (j != psize - 1)
         {
           ++j;
         }
       }
-      ltemp = (m_originalBuffer[0][i] + m_pitchedBuffer[0][j]) / 2.0;
-      rtemp = (m_originalBuffer[1][i] + m_pitchedBuffer[1][j]) / 2.0;
-      (*output)[0].push_back(ltemp);
-      (*output)[1].push_back(rtemp);
       if ((++samplesCounter % m_halfPeriodSamplesCount) == 0)
       {
         samplesCounter  = 0;
         m_internalState = SLOW_STATE;
       }
       break;
-      
+
     case FAST_STATE:
       // We must pitch up during a full period
-      if ((samplesCounter % 30) == 0)
+      if ((samplesCounter % 60) == 0)
       {
         if (j !=psize - 1)
         {
           ++j;
         }
       }
-      ltemp = (m_originalBuffer[0][i] + m_pitchedBuffer[0][j]) / 2.0;
-      rtemp = (m_originalBuffer[1][i] + m_pitchedBuffer[1][j]) / 2.0;
-      (*output)[0].push_back(ltemp);
-      (*output)[1].push_back(rtemp);
       if ((++samplesCounter % m_periodSamplesCount) == 0)
       {
         samplesCounter  = 0;
         m_internalState = SLOW_STATE;
       }
       break;
-      
+
     case SLOW_STATE:
       // We must slow down during a full period
-      if ((samplesCounter % 30) == 0)
+      if ((samplesCounter % 60) == 0)
       {
         if (j != 0)
         {
           --j;
         }
       }
-      ltemp = (m_originalBuffer[0][i] + m_pitchedBuffer[0][j]) / 2.0;
-      rtemp = (m_originalBuffer[1][i] + m_pitchedBuffer[1][j]) / 2.0;
-      (*output)[0].push_back(ltemp);
-      (*output)[1].push_back(rtemp);
       if ((++samplesCounter % m_periodSamplesCount) == 0)
       {
         samplesCounter  = 0;
         m_internalState = FAST_STATE;
       }
       break;
-      
+
     case HOME_STATE:
       break;
-      
+
     default: // Just to please the compilers :-)
       continue;
     }
+    ltemp = (m_originalBuffer[0][i] * m_dry) + (m_pitchedBuffer[0][j] * m_wet);
+    rtemp = (m_originalBuffer[1][i] * m_dry) + (m_pitchedBuffer[1][j] * m_wet);
+    (*output)[0].push_back(ltemp);
+    (*output)[1].push_back(rtemp);
   }
-  
+
   // Cleanups
   for (k = 0; k <= i; ++k)
   {
@@ -188,4 +180,5 @@ void Flanger::setAmplitude(const double &amplitude)
 void Flanger::setWet(const double &wet)
 {
   m_wet = wet;
+  m_dry = 1.0 - m_wet;
 }
