@@ -99,16 +99,22 @@ public:
    * @param success A boolean that states wether the file opening succeeded or
    *        not. If <code>false</code>, don't play with the unit !
    * @param bufferSize The buffer size to use for the decoding. Note that this
-            is a maximum size, but nothing guaranties that the buffer will be
-            full at each <code>performDsp()</code> invocation.
-  * @param sampleRate The audio chain sample rate.   */
+   *        is a maximum size, but nothing guaranties that the buffer will be
+   *        full at each <code>performDsp()</code> invocation.
+   * @param sampleRate The audio chain sample rate.
+   */
   OggFileDecoder(const char* filename, bool &success,
                  const unsigned int &bufferSize = 4096,
                  const unsigned int &sampleRate = 44100);
 
   /**
    * The constructor. This ones starts with no file loaded.
-   */                 
+   *
+   * @param bufferSize The buffer size to use for the decoding. Note that this
+   *        is a maximum size, but nothing guaranties that the buffer will be
+   *        full at each <code>performDsp()</code> invocation.
+   * @param sampleRate The audio chain sample rate.
+   */
   OggFileDecoder(const unsigned int &bufferSize = 4096,
                  const unsigned int &sampleRate = 44100);
 
@@ -119,6 +125,9 @@ public:
 
   /**
    * Tells wether the end of the stream has been reached or not.
+   *
+   * @return <code>true</code> if we have reached the end, <code>false</code>
+   *         otherwise.
    */
   virtual bool isEndReached() { return m_endReached; }
 

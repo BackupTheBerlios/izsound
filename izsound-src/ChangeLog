@@ -1,5 +1,8 @@
 [ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
 
+2003.12.28 (Julien Ponge):
+* oggfiledecoder.h: comments fixes.
+
 2003.12.27 (Julien Ponge):
 * First appearance of the IzSound manual, written using XML DocBook.
 
