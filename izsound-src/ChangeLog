@@ -4,6 +4,7 @@
 * MadDecoder: all the methods are now implemented. However, seeking and getting
   the file duration implies that the file is entirely scanned when beeing
   opened. This is not optimal, but it works.
+* Addition of a NEWS file in the source distribution.
 
 2004.01.02 (Julien Ponge):
 * New year copyright updates.
