@@ -25,6 +25,18 @@
 
 #include <flanger.h>
 
+/*
+ * The internal states:
+ * - INIT_STATE: the flanger is initialising and pitches up on half a period
+ * - FAST_STATE: the flanger is pitching up on a full period
+ * - SLOT_STATE: the flanger is pitching down on a full period
+ * - HOME_STATE: the flanger is bringing the phase to 0.
+ */
+#define INIT_STATE 0
+#define FAST_STATE 1
+#define SLOW_STATE 2
+#define HOME_STATE 3
+
 using namespace std;
 using namespace izsound;
 
@@ -35,9 +47,12 @@ Flanger::Flanger(const double &frequency,
    : DspUnit(sampleRate, 1, 1)
 {
   // Init
+  m_originalBuffer.resize(2);
+  m_pitchedBuffer.resize(2);
   setFrequency(frequency);
   setAmplitude(amplitude);
   setWet(wet);
+  m_internalState = INIT_STATE;
 }
 
 Flanger::~Flanger()
@@ -47,7 +62,44 @@ Flanger::~Flanger()
 
 void Flanger::performDsp()
 {
-
+  // Init
+  SlotData* input  = m_inSlots[0];
+  SlotData* output = m_outSlots[0];
+  (*output)[0].clear();
+  (*output)[1].clear();
+  back_insert_iterator<deque<double> > biLeft1(m_originalBuffer[0]);
+  back_insert_iterator<deque<double> > biRight1(m_originalBuffer[1]);
+  back_insert_iterator<deque<double> > biLeft2(m_pitchedBuffer[0]);
+  back_insert_iterator<deque<double> > biRight2(m_pitchedBuffer[1]);
+  
+  // We copy to the internal buffers
+  copy((*input)[0].begin(), (*input)[0].end(), biLeft1);
+  copy((*input)[1].begin(), (*input)[1].end(), biRight1);
+  copy((*input)[0].begin(), (*input)[0].end(), biLeft2);
+  copy((*input)[1].begin(), (*input)[1].end(), biRight2);
+  
+  // We process the data sample per sample
+  int nsamples = min(m_originalBuffer[0].size(), m_pitchedBuffer[0].size());
+  for (int i = 0; i < nsamples; ++i)
+  {
+    switch (m_internalState)
+    {
+    case INIT_STATE:
+      break;
+      
+    case FAST_STATE:
+      break;
+      
+    case SLOW_STATE:
+      break;
+      
+    case HOME_STATE:
+      break;
+      
+    default: // Just to please the compilers :-)
+      continue;
+    }
+  }
 }
 
 void Flanger::setFrequency(const double &frequency)

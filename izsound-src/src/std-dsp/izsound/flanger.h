@@ -54,6 +54,15 @@ private:
 
   /** The flanger wet ratio. */
   double m_wet;
+  
+  /** The internal original data buffer. */
+  SlotData m_originalBuffer;
+  
+  /** The internal pitched data buffer. */
+  SlotData m_pitchedBuffer;
+  
+  /** The internal flanger state. */
+  int m_internalState;
 
 protected:
 
