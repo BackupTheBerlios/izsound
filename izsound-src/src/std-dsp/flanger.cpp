@@ -29,8 +29,7 @@
  * The internal states:
  * - INIT_STATE: the flanger is initialising and pitches up on half a period
  * - FAST_STATE: the flanger is pitching up on a full period
- * - SLOT_STATE: the flanger is pitching down on a full period
- * - HOME_STATE: the flanger is bringing the phase to 0.
+ * - SLOW_STATE: the flanger is pitching down on a full period.
  */
 #define INIT_STATE 0
 #define FAST_STATE 1
@@ -47,12 +46,12 @@ Flanger::Flanger(const double &frequency,
    : DspUnit(sampleRate, 1, 1)
 {
   // Init
+  m_internalState = INIT_STATE;
   m_originalBuffer.resize(2);
   m_pitchedBuffer.resize(2);
   setFrequency(frequency);
   setAmplitude(amplitude);
   setWet(wet);
-  m_internalState = INIT_STATE;
 }
 
 Flanger::~Flanger()
@@ -120,6 +119,7 @@ void Flanger::performDsp()
       {
         samplesCounter  = 0;
         m_internalState = SLOW_STATE;
+        m_periodSamplesCount = m_periodNextSamplesCount;
       }
       break;
 
@@ -137,9 +137,6 @@ void Flanger::performDsp()
         samplesCounter  = 0;
         m_internalState = FAST_STATE;
       }
-      break;
-
-    case HOME_STATE:
       break;
 
     default: // Just to please the compilers :-)
@@ -166,14 +163,20 @@ void Flanger::performDsp()
 
 void Flanger::setFrequency(const double &frequency)
 {
-  m_frequency = frequency;
-  m_periodSamplesCount = (unsigned int)((double)m_sampleRate / m_frequency);
-  m_halfPeriodSamplesCount = m_periodSamplesCount / 2;
+  m_frequency = (frequency <= 0) ? 0.1 : frequency;
+  m_periodNextSamplesCount = (unsigned int)((double)m_sampleRate / m_frequency);
+  m_halfPeriodSamplesCount = m_periodNextSamplesCount / 2;
+  if (m_internalState == INIT_STATE)
+  {
+    m_periodSamplesCount = m_periodNextSamplesCount;
+  }
 }
 
 void Flanger::setAmplitude(const double &amplitude)
 {
   m_amplitude = amplitude;
+  if (m_amplitude > 1.0) m_amplitude = 1.0;
+  if (m_amplitude < 0.0) m_amplitude = 0.0;
   double rate = (double)m_sampleRate;
   double bs = rate / ((rate * m_amplitude) - m_amplitude);
   m_pitchTrigger = (unsigned int)bs;
@@ -182,5 +185,7 @@ void Flanger::setAmplitude(const double &amplitude)
 void Flanger::setWet(const double &wet)
 {
   m_wet = wet;
+  if (m_wet > 1.0) m_wet = 1.0;
+  if (m_wet < 0.0) m_wet = 0.0;
   m_dry = 1.0 - m_wet;
 }

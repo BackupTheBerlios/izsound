@@ -82,7 +82,7 @@ public:
    *
    * @return The volume factor.
    */
-  inline double getFactor() { return m_factor; }
+  inline double getFactor() const { return m_factor; }
 
 };
 

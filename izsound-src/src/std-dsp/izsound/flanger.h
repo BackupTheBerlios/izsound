@@ -69,6 +69,9 @@ private:
   /** The internal flanger state. */
   int m_internalState;
   
+  /** The next number of samples per period. */
+  unsigned int m_periodNextSamplesCount;
+  
   /** The number of samples per period. */
   unsigned int m_periodSamplesCount;
   
@@ -91,7 +94,7 @@ public:
    * The constructor.
    *
    * @param frequency The flanger frequency.
-   * @param amplitude The effect amplitude.
+   * @param amplitude The effect amplitude in the [0, 1] range.
    * @param wet The wet ratio in the [0, 1] range.
    * @param sampleRate The audio chain sample rate.
    */
@@ -135,14 +138,16 @@ public:
 
   /**
    * Sets the flanger amplitude. A low amplitude such as 0.001 gives great
-   * results. It is used to compute the pitching amount.
+   * results. It is used to compute the pitching amount. Must be in the [0, 1]
+   * range.
    *
    * @param amplitude The new amplitude.
    */
   void setAmplitude(const double &amplitude);
 
   /**
-   * Sets the flanger wet amount. The dry ratio will be (1 - wet).
+   * Sets the flanger wet amount. The dry ratio will be (1 - wet). Must be in
+   * the [0, 1] range.
    *
    * @param wet The new wet amount.
    */

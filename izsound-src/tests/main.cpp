@@ -589,9 +589,18 @@ void flanger()
   flanger.connect(&ao, 0, 0);
 
   // Let's roll baby !
+  unsigned int cpt = 0;
   while (!decoder.isEndReached())
   {
     decoder.run();
+    if (cpt++ % 10 == 0)
+    {
+      flanger.setFrequency(0.25);
+    }
+    else if (cpt % 5 == 0)
+    {
+      flanger.setFrequency(0.5);
+    }
   }
 
   // Cleanups

@@ -99,7 +99,7 @@ public:
    *
    * @return The crossfader position.
    */
-  inline double getPosition() { return m_crossfaderPosition; }
+  inline double getPosition() const { return m_crossfaderPosition; }
 
   /**
    * Sets the crossfader position. A value of -1.0 means 100% to the first

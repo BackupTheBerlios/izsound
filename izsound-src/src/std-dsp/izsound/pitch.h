@@ -103,7 +103,7 @@ public:
    *
    * @return The ratio.
    */
-  inline double getRatio() { return m_ratio; }
+  inline double getRatio() const { return m_ratio; }
 
 };
 
