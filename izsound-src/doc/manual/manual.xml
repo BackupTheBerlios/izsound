@@ -19,6 +19,7 @@
 <!ENTITY intro SYSTEM "intro.xml">
 <!ENTITY dsp SYSTEM "dsp.xml">
 <!ENTITY code-samples SYSTEM "code-samples.xml">
+<!ENTITY bindings SYSTEM "bindings.xml">
 <!ENTITY third-party SYSTEM "third-party.xml">
 
 <!ENTITY sample-dsp-h SYSTEM "sample-dsp.h.xml">
@@ -57,6 +58,13 @@
 
   &code-samples;
   
+</part>
+
+<part>
+  <title>IzSound bindings</title>
+  
+  &bindings;
+
 </part>
 
 &third-party;

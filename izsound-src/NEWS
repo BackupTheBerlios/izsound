@@ -1,10 +1,5 @@
-[ What's new in IzSound 0.2.0 ]
+[ What's new in IzSound 0.3.0 ]
 
-- The IzSound license is now a 3 clauses BSD-style one instead of a 2 one.
-- MadDecoder is now working great thanks to the efforts of Karl Pitrich.
-- Volume can now perform some channel balancing.
-- Karl Pitrich has contributed a white noise generation DSP unit.
-- The libraries now use the Libtool versionning scheme instead of the less
-  flexible release scheme.
-- Various minor fixes on some DSP units and the Doxygen documentation.
-- MadDecoder is GPL'd.
+- The errors handling is now performed by using exceptions.
+- Minor C++ fixes.
+- A set of Python bindings are now available.

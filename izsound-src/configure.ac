@@ -1,5 +1,5 @@
 # Initialisations
-AC_INIT(IzSound, 0.2.0, julien@izforge.com)
+AC_INIT(IzSound, 0.3.0, julien@izforge.com)
 AC_CONFIG_SRCDIR(src/Makefile.am)
 AM_INIT_AUTOMAKE([dist-bzip2])
 AM_SANITY_CHECK
@@ -8,13 +8,13 @@ AM_SANITY_CHECK
 #
 # - If the source code has only changed since the last release, then revision is
 #   bumped.
-# - If the interfaces have been changed (addition, change, removal), then
-#   current is bumped and revision is set to 0.
+# - If the interfaces have been changed (change, removal), then current is
+#   bumped and revision is set to 0.
 # - If any interfaces have been added, then age is bumped.
 # - If any interfaces have been removed, then age is set to 0.
 #
 # We start at 0:0:0 (as of the 0.2.0 release)
-SHARED_VERSION="0:0:0"
+SHARED_VERSION="1:0:0"
 AC_SUBST(SHARED_VERSION)
 
 # Checks for programs.

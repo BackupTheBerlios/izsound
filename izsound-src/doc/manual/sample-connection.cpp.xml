@@ -1,21 +1,18 @@
 <![CDATA[void connexions()
 {
   // Init
-  bool success;
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
+  try
   {
-    cout << "OGG initialisation failed." << endl;
+    OggFileDecoder decoder("track.ogg");
+    LibaoOutput ao("oss", 0);
+    Flanger flanger;
+    BandFilter filter;
+  }
+  catch (IzSoundException &err)
+  {
+    cout << err.what() << endl;
     return;
   }
-  LibaoOutput ao("oss", 0, success);
-  if (!success)
-  {
-    cout << "Could not initialise OSS/LibAO." << endl;
-    return;
-  }
-  Flanger flanger;
-  BandFilter filter;
 
   // Connection
   decoder.connect(&flanger, 0, 0);

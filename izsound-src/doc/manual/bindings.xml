@@ -1,0 +1,65 @@
+<!--
+
+  IzSound manual
+  
+  Copyright (c) 2003, 2004 Julien PONGE. All Rights Reserved.
+  
+  http://www.izforge.com/
+  <julien@izforge.com>
+  <julien_ponge@yahoo.fr>
+
+  :xml.root=manual.xml:
+  
+-->
+
+<chapter id="python-bindings">
+<title>Python</title>
+
+<sect1>
+
+  <title>Overview</title>
+  
+  <para>The IzSound Python bindings are available as a Python extension module. The compilation
+  of the extension module can be performed by using the standard "DistUtils".</para>
+  
+  <para>The module is simply named <classname>izsound</classname> and contains the classes that
+  matches the ones from the IzSound library. The available classes simply match the public APIs from
+  their counterpart classes. You won't be able to develop new IzSound DSP units in Python, but
+  you will be able to plug some of them and process the sound streams.</para>
+  
+  <para>A new version of the bindings is made available whenever a new version of IzSound is
+  published. The release number of the bindings is the same as the one of the IzSound
+  library.</para>
+
+</sect1>
+
+<sect1>
+
+  <title>Example</title>
+  
+  <para>The following Python program illustrates how you can easily use the IzSound Python
+  bindings.</para>
+  
+  <programlisting linenumbering="numbered"><![CDATA[
+#!/usr/bin/env python
+
+import sys
+import izsound
+
+try:
+    ogg = izsound.OggFileDecoder(sys.argv[1])
+    oss = izsound.OssOutput()
+    flg = izsound.Flanger()
+except:
+    print "ooops"
+    sys.exit(0)
+
+ogg.connect(flg, 0, 0)
+flg.connect(oss, 0, 0)
+while not ogg.isEndReached():
+    ogg.run()
+oss.flush()]]></programlisting>
+
+</sect1>
+
+</chapter>

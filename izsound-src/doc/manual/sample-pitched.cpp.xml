@@ -1,20 +1,17 @@
 <![CDATA[void pitchplay()
 {
   // Init
-  bool success;
-  OssOutput oss(success);
-  if (!success)
+  try
   {
-    cout << "OSS output initialisation failed." << endl;
+    OssOutput oss;
+    OggFileDecoder decoder("track.ogg");
+    Pitch pitch(0.75);
+  }
+  catch (IzSoundException &err)
+  {
+    cout << err.what() << endl;
     return;
   }
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
-  Pitch pitch(0.75);
 
   // Connection
   decoder.connect(&pitch, 0, 0);
