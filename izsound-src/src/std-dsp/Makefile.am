@@ -7,7 +7,8 @@ SRCZ = blackhole.cpp \
        delayextrastereo.cpp \
        demultiplexer.cpp \
        flanger.cpp \
-       fragmenter.cpp
+       fragmenter.cpp \
+       datapicker.cpp
 
 INCZ = izsound/blackhole.h \
        izsound/crossfader.h \
@@ -18,7 +19,8 @@ INCZ = izsound/blackhole.h \
        izsound/delayextrastereo.h \
        izsound/demultiplexer.h \
        izsound/flanger.h \
-       izsound/fragmenter.h
+       izsound/fragmenter.h \
+       izsound/datapicker.h
 
 LIBZ = ${top_builddir}/src/izsound/libizsound.la \
        @VORBIS_LIBS@ \

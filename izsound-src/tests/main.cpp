@@ -37,8 +37,10 @@
  * like that, and that's the way it is :-)
  */
 
+#include <fstream>
 #include <iostream>
 
+#include <stdlib.h>
 #include <string.h>
 
 #include <pitch.h>
@@ -48,6 +50,7 @@
 #include <silencer.h>
 #include <ossoutput.h>
 #include <blackhole.h>
+#include <datapicker.h>
 #include <crossfader.h>
 #include <libaooutput.h>
 #include <demultiplexer.h>
@@ -70,6 +73,7 @@ void aowritefile();
 void delayextrastereo();
 void demultiplexer();
 void flanger();
+void picker();
 
 /**
  * The program entry-point.
@@ -107,6 +111,9 @@ int main(int argc, char** argv)
             "\n  (needs a file named track.ogg)" << endl
          << "- flanger: OggFileDecoder + Flanger + LibaoOutput"
             "\n  (needs a file named track.ogg)" << endl
+         << "- picker: OggFileDecoder + DataPicker + LibaoOutput"
+            "\n  (needs a file named track.ogg)" << endl
+         << "  (needs GnuPlot)" << endl
          << endl;
       exit(0);
   }
@@ -138,6 +145,8 @@ int main(int argc, char** argv)
       demultiplexer();
     else if (strcmp(argv[i], "flanger") == 0)
       flanger();
+    else if (strcmp(argv[i], "picker") == 0)
+      picker();
   }
 
   return 0;
@@ -607,6 +616,63 @@ void flanger()
     decoder.run();
   }
 
+
+  // Cleanups
+  ao.flush();
+}
+
+/**
+ * DataPicker test. Puts the data in a file.
+ */
+void picker()
+{
+  // Init
+  cout << endl << "[ picker ]" << endl << endl;
+  bool success;
+  OggFileDecoder decoder("track.ogg", success);
+  if (!success)
+  {
+    cout << "OGG initialisation failed." << endl;
+    return;
+  }
+  LibaoOutput ao("null", 0, success);
+  if (!success)
+  {
+    cout << "Could not initialise null/LibAO." << endl;
+    return;
+  }
+  DataPicker picker;
+
+  // We open the file
+  ofstream of("picked.data");
+
+  // Connection
+  decoder.connect(&picker, 0, 0);
+  picker.connect(&ao, 0, 0);
+
+  // Decoding
+  for (int i = 0; i < 500; ++i)
+  {
+    decoder.run();
+  }
+  while (picker.isDataAvailable())
+  {
+    of << picker.popLeft() << " " << picker.popRight() << endl;
+  }
+  of.flush();
+  of.close();
+
+  // We call gnuplot
+  ofstream script("picked.gplot");
+  script << "set title \"Left channel\"" << endl;
+  script << "plot \"picked.data\" using 1" << endl;
+  script << "pause 5" << endl;
+  script << "set title \"Right channel\"" << endl;
+  script << "plot \"picked.data\" using 2" << endl;
+  script << "pause 5" << endl;
+  script.flush();
+  script.close();
+  system("gnuplot picked.gplot");
 
   // Cleanups
   ao.flush();
