@@ -79,6 +79,7 @@ void picker();
 void bandfilter();
 void connexions();
 void madplay();
+void madseek();
 
 /**
  * The program entry-point.
@@ -125,6 +126,8 @@ int main(int argc, char** argv)
             "LibaoOutput\n  (needs a file named track.ogg)" << endl
          << "- madplay: MadDecoder + LibaoOutput"
             "\n  (needs a file named track.mp3)" << endl
+         << "- madseek: MadDecoder + LibaoOutput"
+            "\n  (needs a file named track.mp3)" << endl
          << endl;
     exit(0);
   }
@@ -164,6 +167,8 @@ int main(int argc, char** argv)
       connexions();
     else if (strcmp(argv[i], "madplay") == 0)
       madplay();
+    else if (strcmp(argv[i], "madseek") == 0)
+      madseek();
   }
 
   return 0;
@@ -841,9 +846,52 @@ void madplay()
   {
     decoder.run();
   }
-  for (int i = 0; i < 100; ++i)
+  for (int i = 0; i < 10; ++i)
   {
     decoder.run();
+  }
+
+  // Cleanups
+  ao.flush();
+}
+
+/**
+ * MadDecoder seeking test.
+ */
+void madseek()
+{
+  // Init
+  cout << endl << "[ madseek ]" << endl << endl;
+  bool success;
+  MadDecoder decoder("track.mp3", success);
+  if (!success)
+  {
+    cout << "Mad initialisation failed." << endl;
+    return;
+  }
+  LibaoOutput ao("oss", 0, success);
+  if (!success)
+  {
+    cout << "Could not initialise OSS/LibAO." << endl;
+    return;
+  }
+
+  // Connection
+  decoder.connect(&ao, 0, 0);
+
+  // Let's roll baby !
+  for (int i = 0; i < 50; ++i)
+  {
+    decoder.run();
+  }
+  double pos = decoder.getCurrentTime();
+  for (int j = 0; j < 5; ++j)
+  {
+    for (int i = 0; i < 50; ++i)
+    {
+      decoder.run();
+    }
+    decoder.seek(pos);
   }
 
   // Cleanups

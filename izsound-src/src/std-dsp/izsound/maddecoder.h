@@ -31,9 +31,12 @@
 #ifndef IZSOUND_MADDECODER_H
 #define IZSOUND_MADDECODER_H
 
+#include <math.h>
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
+
+#include <deque>
 
 #include <mad.h>
 
@@ -47,7 +50,9 @@ namespace izsound
 
 /**
  * A MPEG files decoder DSP unit. It uses the Mad library to perform the job.
- * <b>The seeking and time accounting methods do not work for the moment.</b>
+ * Due to the way that the Mad library is implemented, the seeking and total
+ * time account methods require a full file scan when it is opened. This
+ * requires a few seconds ...
  *
  * This unit has no input slot and one output slot.
  *
@@ -85,8 +90,14 @@ private:
   /** The input file. */
   FILE* m_inputFile;
 
+  /** The file size (counted in number of 'unsigned int'). */
+  unsigned long m_fileSize;
+
   /** True when the end of the file is reached. */
   bool m_endReached;
+
+  /** The current file total time, in seconds. */
+  double m_totalTime;
 
   /**
    * Performs the constructors common initialisation job.
@@ -118,8 +129,7 @@ private:
    */
   void playNothing();
 
-
-  /*
+  /**
    * Converts a sample from mad's fixed point number format to an unsigned
    * short (16 bits).
    *
@@ -127,6 +137,13 @@ private:
    * @return The converted number.
    */
   inline int scale(mad_fixed_t sample);
+
+  /**
+   * Scans the input file to prepare the unit to be able to make some
+   * operations that are not directly allowed by the mad library like getting
+   * the duration or seeking.
+   */
+  void scanInputFile();
 
 protected:
 
@@ -219,6 +236,22 @@ public:
 
 }
 
+/*
+ * Used for internal purposes.
+ */
+
+typedef struct
+{
+  FILE* file;
+  mad_timer_t timer;
+  unsigned long dataCounter;
+} timing_data;
+
+enum mad_flow input_cb(void *data, struct mad_stream *stream);
+enum mad_flow output_cb(void *data, struct mad_header const *header,
+                        struct mad_pcm *pcm);
+enum mad_flow error_cb(void *data, struct mad_stream *stream,
+                       struct mad_frame *frame);
 #endif
 
 /*

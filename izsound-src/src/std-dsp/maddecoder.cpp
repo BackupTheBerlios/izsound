@@ -55,6 +55,7 @@ void MadDecoder::commonInits()
 {
   m_frameCount      = 0;
   m_inputFile       = 0;
+  m_fileSize        = 0;
   m_endReached      = false;
 }
 
@@ -114,7 +115,7 @@ fill_me:
     size_t remaining;
     unsigned char* readStart;
 
-   // There can be residual data in the input buffer
+    // There can be residual data in the input buffer
     if(m_stream.next_frame != NULL)
     {
       remaining = m_stream.bufend - m_stream.next_frame;
@@ -246,7 +247,8 @@ void MadDecoder::open(const char* filename, bool &success)
   closeFile();
   initMadStructs();
   m_inputFile = fopen(filename, "rb");
-  success = (m_inputFile != NULL);
+  scanInputFile();
+  success = (m_inputFile != NULL) && (m_totalTime > 0.0);
   m_endReached = false;
   m_frameCount = 0;
 }
@@ -258,18 +260,106 @@ bool MadDecoder::isEndReached()
 
 double MadDecoder::getTotalTime()
 {
-  return 0.0; // TODO
+  return m_totalTime;
 }
 
 void MadDecoder::seek(const double &pos)
 {
-  // TODO
+  // Sanity checks
+  double timePos = pos;
+  if (pos > m_totalTime)
+  {
+    timePos = m_totalTime;
+  }
+  else if (pos < 0.0)
+  {
+    timePos = 0.0;
+  }
+
+  /* We compute a file offset to perform the seeking.
+   * Yes, it is not perfectly accurate, but the libmad sucks a lot.
+   * In contrast, libogg was made by _real_ programmers.
+   */
+  double ratio  = timePos / m_totalTime;
+  double offset = m_fileSize * ratio;
+  fseek(m_inputFile, (long)floor(offset), SEEK_SET);
+
+  // We need to reset the libmad structs
+  initMadStructs();
 }
 
 double MadDecoder::getCurrentTime()
 {
   double msecs = (double)mad_timer_count(m_timer, MAD_UNITS_MILLISECONDS);
   return (msecs / 1000.0);
+}
+
+void MadDecoder::scanInputFile()
+{
+  // Inits
+  timing_data d;
+  struct mad_decoder decoder;
+  int status;
+  d.file        = m_inputFile;
+  d.dataCounter = 0;
+  mad_timer_reset(&d.timer);
+
+  // Decoding
+  mad_decoder_init(&decoder, &d, input_cb, 0, 0, output_cb, error_cb, 0);
+  status = mad_decoder_run(&decoder, MAD_DECODER_MODE_SYNC);
+  mad_decoder_finish(&decoder);
+  rewind(m_inputFile);
+
+  // We get the file size
+  m_fileSize = d.dataCounter;
+
+  // We can now compute the duration
+  if (status < 0)
+  {
+    m_totalTime = -1.0;
+  }
+  else
+  {
+    double msecs = (double)mad_timer_count(d.timer, MAD_UNITS_MILLISECONDS);
+    m_totalTime = (msecs / 1000.0);
+  }
+}
+
+/*
+ * Callbacks used for the scanning operation.
+ */
+
+enum mad_flow input_cb(void *data, struct mad_stream *stream)
+{
+  static unsigned char buffer[INPUT_BUFFER_SIZE];
+  timing_data* d = (timing_data*)data;
+
+  size_t nread = fread(buffer, sizeof(unsigned char),
+                       INPUT_BUFFER_SIZE, d->file);
+  d->dataCounter += nread;
+  if (nread <= 0)
+  {
+    return MAD_FLOW_STOP;
+  }
+
+  mad_stream_buffer(stream, buffer, nread);
+  return MAD_FLOW_CONTINUE;
+}
+
+enum mad_flow output_cb(void *data, struct mad_header const *header,
+                        struct mad_pcm *pcm)
+{
+  timing_data* d = (timing_data*)data;
+
+  mad_timer_add(&(d->timer), header->duration);
+
+  return MAD_FLOW_CONTINUE;
+}
+
+enum mad_flow error_cb(void *data, struct mad_stream *stream,
+                       struct mad_frame *frame)
+{
+  return MAD_FLOW_CONTINUE;
 }
 
 /*
