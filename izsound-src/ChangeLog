@@ -1,5 +1,12 @@
 [ IzSound x.y.z ] (2003.xx.yy) release-x-y-z
 
+2003.10.17 (Julien Ponge):
+* The flanger implementation of 0.0.2 looks like a dead-end. The code of this
+  unit has been removed and the flanger is broken for now. Don't use it as it
+  does not even send the stream data to its successor unit. You've been warned.
+* C++ Compiler (gcc) flags: added '-Wall' (important !) and '-fno-rtti' as well
+  as '-fno-exceptions'.
+
 2003.10.04 (Julien Ponge):
 * New fragmenter unit.
 * Small fixes.
