@@ -2,8 +2,9 @@
  * IzSound - Copyright (c) 2003, 2004 Julien Ponge - All rights reserved.
  *
  * Portions are:
- * - Copyright (C) 2000-2003 Underbit Technologies, Inc.
- * - Copyright (C) 2004 Karl Pitrich.
+ * - Copyright (c) 2000-2003 Underbit Technologies, Inc. [minimad.c]
+ * - Copyright (c) 1995-1999 Michael Hipp. [xmms mpg123 plugin]
+ * - Copyright (c) 2004 Karl Pitrich.
  *
  * The MadDecoder DSP unit (izsound/maddecoder.h + maddecoder.cpp) is published
  * under the terms of the following license agreement:
