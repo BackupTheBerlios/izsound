@@ -90,7 +90,7 @@ AC_ARG_ENABLE(debug,
               esac],
               [debug=false])
 if test x${debug} = xtrue; then
-  DFLAGS='-Wall -g -O0 -fno-rtti -fno-exceptions'
+  DFLAGS='-Wall -g -O0 -pipe -fno-rtti -fno-exceptions'
 else
   DFLAGS=`echo ${CPPFLAGS} | sed s/-g//g`
   if test x${DFLAGS} = x; then

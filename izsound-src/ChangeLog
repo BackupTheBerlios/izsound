@@ -1,5 +1,8 @@
 [ IzSound x.y.z ] (2003.xx.yy) release-x-y-z
 
+2003.10.18 (Julien Ponge):
+* Added the '-pipe' GCC flag for the debug mode.
+
 2003.10.17 (Julien Ponge):
 * The flanger implementation of 0.0.2 looks like a dead-end. The code of this
   unit has been removed and the flanger is broken for now. Don't use it as it
