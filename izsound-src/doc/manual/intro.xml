@@ -63,7 +63,7 @@
 
   <title>Licensing</title>
   
-  <para>IzSound is distributed under a 2 clauses BSD-style license. Here are the exact terms of
+  <para>IzSound is distributed under a 3 clauses BSD-style license. Here are the exact terms of
   the license agreement:
   <screen>&izsound-license;</screen>
   </para>
@@ -86,11 +86,14 @@
       <tbody>
         <row>
           <entry><para><classname>LibaoOutput</classname></para></entry>
-          <entry><para>GNU GPL</para></entry>
+          <entry><para>Your application license has to be compatible with the GNU GPL.
+          The DSP unit source code is licensed under the terms of the IzSound license.
+          </para></entry>
         </row>
         <row>
           <entry><para><classname>MadDecoder</classname></para></entry>
-          <entry><para>GNU GPL</para></entry>
+          <entry><para>Your application license has to be compatible with theGNU GPL.
+          The DSP unit source code is licensed under the terms of the GNU GPL.</para></entry>
         </row>
         <row>
           <entry><para>Other units</para></entry>

@@ -11,3 +11,8 @@ effects implementation.
 
 The MadDecoder unit has been built using the madlld example located at
 http://www.bsd-dk.dk/~elrond/audio/madlld/ .
+
+[ Karl Pitrich ]
+
+The MadDecoder DSP unit has been dramatically improved thanks to his work. He
+also has contributed to the Volume DSP unit.

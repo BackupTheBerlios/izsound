@@ -1,5 +1,18 @@
 [ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
 
+2004.01.11 (Julien Ponge):
+* MadDecoder: a lot of enhancements thanks to Karl Pitrich. Now, the DSP unit
+  does no longer need to make a scan of the file to decode to grab the length.
+  The unit also recognizes Xing headers and the file is mmap'ed.
+* Volume: Karl Pitrich contributed some code to enable some channel balancing
+  operations.
+* Documentation minor updates.
+* MadDecoder is now licensed under the terms of the GNU GPL license because of
+  the 3rd-party code used to implement it. The unit compilation can be disabled
+  if you don't want it though.
+* The IzSound license is now a 3 clauses BSD-style license instead of a 2
+  clauses one. This is mainly to protect the author and its contributors names.
+
 2004.01.07 (Julien Ponge):
 * MadDecoder: error handling fix when opening a file.
 * Flanger: a '#include <functional>' was missing in the header file and caused

@@ -1,37 +1,116 @@
 /*
- * IzSound - Copyright (c) 2003, 2004 Julien PONGE - All rights reserved.
+ * IzSound - Copyright (c) 2003, 2004 Julien Ponge - All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
+ * Portions are:
+ * - Copyright (C) 2000-2003 Underbit Technologies, Inc.
+ * - Copyright (C) 2004 Karl Pitrich.
  *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * The MadDecoder DSP unit (izsound/maddecoder.h + maddecoder.cpp) is published
+ * under the terms of the following license agreement:
  *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * -----------------------------------------------------------------------------
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * -----------------------------------------------------------------------------
+ *
+ * A copy of the GNU General Public License is available in the IzSound source
+ * code distribution (COPYING.GPL).
  */
 
 /*
- * Please see at the bottom of this file for more informations on the exact
- * licensing terms of this file.
+ * The MadDecoder DSP unit implementation is based on the madlld program from
+ * Bertrand Petit: http://www.bsd-dk.dk/~elrond/audio/madlld/ .
  */
+
+/****************************************************************************
+ * madlld.c -- A simple program decoding an mpeg audio stream to 16-bit     *
+ * PCM from stdin to stdout. This program is just a simple sample           *
+ * demonstrating how the low-level libmad API can be used.                  *
+ *--------------------------------------------------------------------------*
+ * (c) 2001, 2002 Bertrand Petit                                            *
+ *                                                                          *
+ * Redistribution and use in source and binary forms, with or without       *
+ * modification, are permitted provided that the following conditions       *
+ * are met:                                                                 *
+ *                                                                          *
+ * 1. Redistributions of source code must retain the above copyright        *
+ *    notice, this list of conditions and the following disclaimer.         *
+ *                                                                          *
+ * 2. Redistributions in binary form must reproduce the above               *
+ *    copyright notice, this list of conditions and the following           *
+ *    disclaimer in the documentation and/or other materials provided       *
+ *    with the distribution.                                                *
+ *                                                                          *
+ * 3. Neither the name of the author nor the names of its contributors      *
+ *    may be used to endorse or promote products derived from this          *
+ *    software without specific prior written permission.                   *
+ *                                                                          *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS''       *
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED        *
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A          *
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR       *
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,             *
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT         *
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF         *
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND      *
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,       *
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT       *
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF       *
+ * SUCH DAMAGE.                                                             *
+ *                                                                          *
+ ****************************************************************************/
 
 #include "maddecoder.h"
 
 using namespace std;
 using namespace izsound;
+
+/*
+ * A frame.
+ */
+struct frame
+{
+  int lsf;
+  int mpeg25;
+  int lay;
+  int bitrate_index;
+  int sampling_frequency;
+  int padding;
+  int framesize;
+};
+
+/*
+ * A Xing header.
+ */
+typedef struct
+{
+  int frames;   /* total bit stream frames from Xing header data */
+  int bytes;    /* total bit stream bytes from Xing header data */
+  unsigned char toc[100]; /* "table of contents" */
+} xing_header_t;
+
+/*
+ * Various helper functions.
+ */
+static long convert_to_header(unsigned char *buf);
+static bool head_check(unsigned long head);
+static double compute_tpf(struct frame *fr);
+static double compute_bpf(struct frame *fr);
+static int decode_header(struct frame *fr, unsigned long newhead);
+static void *map_file(int fd, unsigned long length);
+static int unmap_file(void *fdm, unsigned long length);
+static int get_xing_header(xing_header_t * xing, const char *buf);
 
 MadDecoder::MadDecoder(const unsigned int &sampleRate)
   : DspUnit(sampleRate, 0, 1)
@@ -83,7 +162,8 @@ MadDecoder::~MadDecoder()
 void MadDecoder::closeFile()
 {
   if (m_inputFile == 0) return;
-  fclose(m_inputFile);
+  unmap_file((void *)m_fdm, m_fileSize);
+  close(m_inputFile);
   releaseMadStructs();
 }
 
@@ -110,40 +190,36 @@ void MadDecoder::playNextChunk()
 fill_me:
   if(m_stream.buffer == NULL || m_stream.error == MAD_ERROR_BUFLEN)
   {
-    // Vars
-    size_t readSize;
-    size_t remaining;
-    unsigned char* readStart;
+    long chunkSize;
+    long remaining;
 
     // There can be residual data in the input buffer
     if(m_stream.next_frame != NULL)
     {
-      remaining = m_stream.bufend - m_stream.next_frame;
-      memmove(m_inputBuffer, m_stream.next_frame, remaining);
-      readStart = m_inputBuffer + remaining;
-      readSize  = INPUT_BUFFER_SIZE - remaining;
+      m_offset  = m_stream.next_frame - m_fdm;
+      remaining = m_fileSize - m_offset;
+
+      chunkSize  = INPUT_BUFFER_SIZE;
+      if(remaining < INPUT_BUFFER_SIZE)
+      {
+        chunkSize = remaining + MAD_BUFFER_GUARD;
+      }
     }
     else
     {
-      readSize  = INPUT_BUFFER_SIZE;
-      readStart = m_inputBuffer;
+      chunkSize = INPUT_BUFFER_SIZE;
       remaining = 0;
     }
 
-    // We read from the file
-    readSize = fread(readStart, 1, readSize, m_inputFile);
-    if(readSize <= 0)
+    if(m_offset >= m_fileSize)
     {
-      if(feof(m_inputFile))
-      {
-        m_endReached = true;
-      }
+      m_endReached = true;
       stop();
       return;
     }
 
-    // We fill our mad buffer
-    mad_stream_buffer(&m_stream, m_inputBuffer, readSize + remaining);
+    // Fill mad buffer
+    mad_stream_buffer(&m_stream, m_fdm + m_offset, chunkSize);
     m_stream.error = MAD_ERROR_NONE;
   }
 
@@ -236,22 +312,39 @@ void MadDecoder::stop()
   m_frameCount = 0;
   releaseMadStructs();
   initMadStructs();
-  if (m_inputFile != 0)
-  {
-    rewind(m_inputFile);
-  }
+  m_offset = 0;
 }
 
 void MadDecoder::open(const char* filename, bool &success)
 {
+  // Release the previous resources
   closeFile();
   initMadStructs();
-  m_inputFile = fopen(filename, "rb");
-  success = (m_inputFile != NULL);
-  if (!success) return;
-  scanInputFile();
-  success = (m_totalTime > 0.0);
-  if (!success) return;
+  success = true;
+
+  // File opening
+  m_inputFile = ::open(filename, O_RDONLY);
+  if(m_inputFile != -1)
+  {
+    struct stat stat;
+    if (fstat(m_inputFile, &stat) != -1)
+    {
+      m_fileSize = S_ISREG(stat.st_mode) ? stat.st_size : 0;
+      if (S_ISREG(stat.st_mode) && stat.st_size > 0)
+      {
+        m_fileSize = stat.st_size;
+        m_fdm = (unsigned char *)map_file(m_inputFile, m_fileSize);
+        if(m_fdm == 0)
+        {
+          success = false;
+        }
+        m_totalTime = getSongTime();
+      }
+    }
+  }
+
+  // Get ready
+  success = (m_inputFile != -1) && (m_totalTime > 0.0);
   m_endReached = false;
   m_frameCount = 0;
 }
@@ -285,7 +378,7 @@ void MadDecoder::seek(const double &pos)
    */
   double ratio  = timePos / m_totalTime;
   double offset = m_fileSize * ratio;
-  fseek(m_inputFile, (long)floor(offset), SEEK_SET);
+  m_offset = (unsigned long)offset;
 
   // We need to reset the libmad structs
   initMadStructs();
@@ -297,169 +390,343 @@ double MadDecoder::getCurrentTime()
   return (msecs / 1000.0);
 }
 
-void MadDecoder::scanInputFile()
+
+long MadDecoder::getSongLength()
+{
+  // Vars
+  char tmp[4];
+  int len = m_fileSize;
+
+  // We get it
+  memcpy(&tmp, m_fdm + m_fileSize - 128, 3);
+  if (!strncmp(tmp, "TAG", 3))
+  {
+    len -= 128;
+  }
+  return len;
+}
+
+double MadDecoder::getSongTime()
+{
+  // Vars
+  unsigned long head;
+  unsigned char tmp[4];
+  struct frame frm;
+  double tpf, bpf;
+  unsigned long len;
+  unsigned char *mapPtr = m_fdm;
+  unsigned char *buf;
+  xing_header_t xing_header;
+
+  // Inits
+  memcpy(&tmp, mapPtr, 4);
+  mapPtr += 4;
+  head = convert_to_header(tmp);
+
+  // We find a header
+  while (!head_check(head))
+  {
+    head <<= 8;
+    memcpy(&tmp, ++mapPtr, 1);
+    head |= tmp[0];
+  }
+
+  // We decode it
+  if (decode_header(&frm, head))
+  {
+    tpf = compute_tpf(&frm);
+    buf = (unsigned char *)malloc(frm.framesize + 4);
+    mapPtr -= 4;
+    memcpy(buf, mapPtr, frm.framesize + 4);
+    if (get_xing_header(&xing_header, (const char*)buf))
+    {
+      free(buf);
+      if (xing_header.bytes == 0)
+      {
+        xing_header.bytes = getSongLength();
+      }
+      return (double)tpf * xing_header.frames;
+    }
+    free(buf);
+    bpf = compute_bpf(&frm);
+    len = getSongLength();
+    return (double)(len / bpf) * tpf;
+  }
+
+  return 0;
+}
+
+static void *map_file(int fd, unsigned long length)
+{
+  void *fdm;
+
+  fdm = mmap(0, length, PROT_READ, MAP_SHARED, fd, 0);
+  if (fdm == MAP_FAILED)
+  {
+    return 0;
+  }
+
+  madvise(fdm, length, MADV_SEQUENTIAL);
+  return fdm;
+}
+
+static int unmap_file(void *fdm, unsigned long length)
+{
+  return (munmap(fdm, length) == -1) ? -1 : 0;
+}
+
+// Song time determination stuff.
+// Stolen from xmms-mpg123 plugin.
+
+static const int bitrates_table[2][3][16] =
+{
+  {
+    {0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448,},
+    {0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384,},
+    {0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320,}
+  },
+  {
+    {0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256,},
+    {0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160,},
+    {0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160,}
+  }
+};
+
+static const int samplefreq_table[9] =
+{
+  44100, 48000, 32000, 22050, 24000, 16000, 11025, 12000, 8000
+};
+
+#define GET_INT32BE(b) \
+  (i = (b[0] << 24) | (b[1] << 16) | b[2] << 8 | b[3], b += 4, i)
+
+#define FRAMES_FLAG     0x0001
+#define BYTES_FLAG      0x0002
+#define TOC_FLAG        0x0004
+#define VBR_SCALE_FLAG  0x0008
+
+static int get_xing_header(xing_header_t * xing, const char *buf)
 {
   // Inits
-  timing_data d;
-  struct mad_decoder decoder;
-  int status;
-  d.file        = m_inputFile;
-  d.dataCounter = 0;
-  mad_timer_reset(&d.timer);
+  int i, head_flags;
+  int id, mode;
+  memset(xing, 0, sizeof(xing_header_t));
 
-  // Decoding
-  mad_decoder_init(&decoder, &d, input_cb, 0, 0, output_cb, error_cb, 0);
-  status = mad_decoder_run(&decoder, MAD_DECODER_MODE_SYNC);
-  mad_decoder_finish(&decoder);
-  rewind(m_inputFile);
+  // Get the selected MPEG header data
+  id = (buf[1] >> 3) & 1;
+  mode = (buf[3] >> 6) & 3;
+  buf += 4;
 
-  // We get the file size
-  m_fileSize = d.dataCounter;
-
-  // We can now compute the duration
-  if (status < 0)
+  // Skip the sub band data
+  if (id) // mpeg1
   {
-    m_totalTime = -1.0;
+    if (mode != 3)
+    {
+      buf += 32;
+    }
+    else
+    {
+      buf += 17;
+    }
+  }
+  else // mpeg2
+  {
+    if (mode != 3)
+    {
+      buf += 17;
+    }
+    else
+    {
+      buf += 9;
+    }
+  }
+
+  if (strncmp(buf, "Xing", 4))
+  {
+    return 0;
+  }
+  buf += 4;
+
+  head_flags = GET_INT32BE(buf);
+
+  if (head_flags & FRAMES_FLAG)
+  {
+    xing->frames = GET_INT32BE(buf);
+  }
+  if (xing->frames < 1)
+  {
+    return 0;
+  }
+  if (head_flags & BYTES_FLAG)
+  {
+    xing->bytes = GET_INT32BE(buf);
+  }
+
+  if (head_flags & TOC_FLAG)
+  {
+    for (i = 0; i < 100; ++i)
+    {
+      xing->toc[i] = buf[i];
+      if (i > 0 && xing->toc[i] < xing->toc[i - 1])
+      {
+        return 0;
+      }
+    }
+    if (xing->toc[99] == 0)
+    {
+      return 0;
+    }
+    buf += 100;
   }
   else
   {
-    double msecs = (double)mad_timer_count(d.timer, MAD_UNITS_MILLISECONDS);
-    m_totalTime = (msecs / 1000.0);
+    for (i = 0; i < 100; ++i)
+    {
+      xing->toc[i] = (i * 256) / 100;
+    }
   }
+
+  return 1;
 }
 
-/*
- * Callbacks used for the scanning operation.
- */
-
-enum mad_flow input_cb(void *data, struct mad_stream *stream)
+static long convert_to_header(unsigned char *buf)
 {
-  static unsigned char buffer[INPUT_BUFFER_SIZE];
-  timing_data* d = (timing_data*)data;
+  return (buf[0] << 24) + (buf[1] << 16) + (buf[2] << 8) + buf[3];
+}
 
-  size_t nread = fread(buffer, sizeof(unsigned char),
-                       INPUT_BUFFER_SIZE, d->file);
-  d->dataCounter += nread;
-  if (nread <= 0)
+static bool head_check(unsigned long head)
+{
+  if ((head & 0xffe00000) != 0xffe00000)
   {
-    return MAD_FLOW_STOP;
+    return false;
+  }
+  if (!((head >> 17) & 3))
+  {
+    return false;
+  }
+  if (((head >> 12) & 0xf) == 0xf)
+  {
+    return false;
+  }
+  if (!((head >> 12) & 0xf))
+  {
+    return false;
+  }
+  if (((head >> 10) & 0x3) == 0x3)
+  {
+    return false;
+  }
+  if (((head >> 19) & 1) == 1 &&
+      ((head >> 17) & 3) == 3 &&
+      ((head >> 16) & 1) == 1)
+  {
+    return false;
+  }
+  if ((head & 0xffff0000) == 0xfffe0000)
+  {
+    return false;
+  }
+  return true;
+}
+
+static double compute_tpf(struct frame *fr)
+{
+  const int bs[4] = {0, 384, 1152, 1152};
+  double tpf;
+  tpf = bs[fr->lay];
+  tpf /= samplefreq_table[fr->sampling_frequency] << (fr->lsf);
+  return tpf;
+}
+
+static double compute_bpf(struct frame *fr)
+{
+  double bpf;
+
+  switch (fr->lay)
+  {
+  case 1:
+    bpf = bitrates_table[fr->lsf][0][fr->bitrate_index];
+    bpf *= 12000.0 * 4.0;
+    bpf /= samplefreq_table[fr->sampling_frequency] << (fr->lsf);
+    break;
+
+  case 2:
+  case 3:
+    bpf = bitrates_table[fr->lsf][fr->lay - 1][fr->bitrate_index];
+    bpf *= 144000;
+    bpf /= samplefreq_table[fr->sampling_frequency] << (fr->lsf);
+    break;
+
+  default:
+    bpf = 1.0;
   }
 
-  mad_stream_buffer(stream, buffer, nread);
-  return MAD_FLOW_CONTINUE;
+  return bpf;
 }
 
-enum mad_flow output_cb(void *data, struct mad_header const *header,
-                        struct mad_pcm *pcm)
+static int decode_header(struct frame *fr, unsigned long newhead)
 {
-  timing_data* d = (timing_data*)data;
+  if (newhead & (1 << 20))
+  {
+    fr->lsf = (newhead & (1 << 19)) ? 0x0 : 0x1;
+    fr->mpeg25 = 0;
+  }
+  else
+  {
+    fr->lsf = 1;
+    fr->mpeg25 = 1;
+  }
+  fr->lay = 4 - ((newhead >> 17) & 3);
+  if (fr->mpeg25)
+  {
+    fr->sampling_frequency = 6 + ((newhead >> 10) & 0x3);
+  }
+  else
+  {
+    fr->sampling_frequency = ((newhead >> 10) & 0x3) + (fr->lsf * 3);
+  }
 
-  mad_timer_add(&(d->timer), header->duration);
+  fr->bitrate_index = ((newhead >> 12) & 0xf);
+  fr->padding = ((newhead >> 9) & 0x1);
 
-  return MAD_FLOW_CONTINUE;
+  if (!fr->bitrate_index)
+  {
+    return (0);
+  }
+
+  switch (fr->lay)
+  {
+  case 1:
+    fr->framesize = (long)bitrates_table[fr->lsf][0][fr->bitrate_index] *
+                    12000;
+    fr->framesize /= samplefreq_table[fr->sampling_frequency];
+    fr->framesize = ((fr->framesize + fr->padding) << 2) - 4;
+    break;
+
+  case 2:
+    fr->framesize = (long)bitrates_table[fr->lsf][1][fr->bitrate_index] *
+                    144000;
+    fr->framesize /= samplefreq_table[fr->sampling_frequency];
+    fr->framesize += fr->padding - 4;
+    break;
+
+  case 3:
+    fr->framesize = (long) bitrates_table[fr->lsf][2][fr->bitrate_index] *
+                    144000;
+    fr->framesize /= samplefreq_table[fr->sampling_frequency] << (fr->lsf);
+    fr->framesize = fr->framesize + fr->padding - 4;
+    break;
+
+  default:
+    return (0);
+  }
+
+  if(fr->framesize > 1792 /*MAXFRAMESIZE*/)
+  {
+    return 0;
+  }
+  else
+  {
+    return 1;
+  }
 }
-
-enum mad_flow error_cb(void *data, struct mad_stream *stream,
-                       struct mad_frame *frame)
-{
-  return MAD_FLOW_CONTINUE;
-}
-
-/*
- * This implementation is based on the madldd program from Bertrand Petit.
- * I found it at http://www.bsd-dk.dk/~elrond/audio/madlld/ .
- * Indeed, the Mad library is _not_ documented (or if their authors think so,
- * they are _really_ ... mad). Its madldd program is actually an example of
- * how to use the libmad low-level functions. It is heavily documented and
- * helps understanding how it is possible to use this library.
- *
- * I have no doubt that the Mad library produces a high-quality decoding.
- * However, I have no doubt that its API is awful, and not having a single
- * clean documentation file (appart of the minimad.c file) is absolutely not
- * developer-friendly.
- *
- * At first, I tried to use the high-level function, as described in the
- * minimad.c example file. Indeed, the high-level API is quite easy to
- * understand. However, it has the following flaw: the decoding function holds
- * the looping logic. As a consequence, your program can't have the control of
- * the decoding process unless you do some silly hacks. You have the option to
- * call this function and tell it to run asynchronously. This way, the function
- * returns and you can do some other things. What happens is that the decoding
- * loops runs in a forked process. So with the needs I have (grab the data by
- * small chunks), the only issue was to do some silly hacks like using Unix
- * sockets just to get the data. Indeed, it would be produced in another
- * process ... That's why I had no choice but to use the low-level functions.
- *
- * My implementation is a great refactor of madldd.c. Several things have been
- * changed and adapted to meet my needs. It now has a vague ressemblance with
- * the original work, but its author _really_ deserves some credit.
- */
-
-/*
- * The following copyright notice gives back credit to Bertrand Petit.
- */
-
-/****************************************************************************
- * madlld.c -- A simple program decoding an mpeg audio stream to 16-bit     *
- * PCM from stdin to stdout. This program is just a simple sample           *
- * demonstrating how the low-level libmad API can be used.                  *
- *--------------------------------------------------------------------------*
- * (c) 2001, 2002 Bertrand Petit                                            *
- *                                                                          *
- * Redistribution and use in source and binary forms, with or without       *
- * modification, are permitted provided that the following conditions       *
- * are met:                                                                 *
- *                                                                          *
- * 1. Redistributions of source code must retain the above copyright        *
- *    notice, this list of conditions and the following disclaimer.         *
- *                                                                          *
- * 2. Redistributions in binary form must reproduce the above               *
- *    copyright notice, this list of conditions and the following           *
- *    disclaimer in the documentation and/or other materials provided       *
- *    with the distribution.                                                *
- *                                                                          *
- * 3. Neither the name of the author nor the names of its contributors      *
- *    may be used to endorse or promote products derived from this          *
- *    software without specific prior written permission.                   *
- *                                                                          *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS''       *
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED        *
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A          *
- * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR OR       *
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,             *
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT         *
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF         *
- * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND      *
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,       *
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT       *
- * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF       *
- * SUCH DAMAGE.                                                             *
- *                                                                          *
- ****************************************************************************/
-
-/*
- * The implementation makes use of a few lines of code coming from the minimad.c
- * file shipped with the Mad library distribution. The related code can be found
- * in MadDecoder::scale. As a consequence, the following file use is actually
- * governed by the GNU GPL, unless you provide an alternative implementation
- * for MadDecoder::scale.
- */
-
-/*
- * libmad - MPEG audio decoder library
- * Copyright (C) 2000-2003 Underbit Technologies, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */

@@ -66,14 +66,11 @@
     </listitem>
     
     <listitem><para>The <classname>MadDecoder</classname> class makes use of the
-    <function>scale()</function> function from the <filename>minimad.c</filename> example file
-    provided with the Mad library sources. The GNU GPL terms are provided in the IzSound
+    several portions of third-party code. To make the things simpler, it is licensed
+    under the terms of the GNU GPL. The GNU GPL terms are provided in the IzSound
     sources distribution in the <filename>COPYING.GPL</filename> file.</para>
     <screen><![CDATA[
 /*
- * libmad - MPEG audio decoder library
- * Copyright (C) 2000-2003 Underbit Technologies, Inc.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
