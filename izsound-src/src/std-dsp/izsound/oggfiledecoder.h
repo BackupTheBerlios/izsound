@@ -46,7 +46,7 @@ namespace izsound
  *
  * @author Julien PONGE <julien@izforge.com>
  */
-class OggFileDecoder : public DspUnit, virtual public Player
+class OggFileDecoder : public DspUnit, public virtual Player
 {
 
 private:
@@ -101,16 +101,17 @@ public:
    * The constructor. This one starts with a file and in the playing state.
    *
    * @param filename The valid path to the OGG file to read.
-   * @param success A boolean that states wether the file opening succeeded or
-   *        not. If <code>false</code>, don't play with the unit !
    * @param bufferSize The buffer size to use for the decoding. Note that this
    *        is a maximum size, but nothing guaranties that the buffer will be
    *        full at each <code>performDsp()</code> invocation.
    * @param sampleRate The audio chain sample rate.
+   * @throw IzSoundException An exception is thrown when the file opening
+   *         operation fails.
    */
-  OggFileDecoder(const char* filename, bool &success,
+  OggFileDecoder(const char* filename,
                  const unsigned int &bufferSize = 4096,
-                 const unsigned int &sampleRate = 44100);
+                 const unsigned int &sampleRate = 44100)
+  throw(IzSoundException);
 
   /**
    * The constructor. This ones starts with no file loaded.
@@ -157,9 +158,10 @@ public:
    * Opens a file from a filename.
    *
    * @param filename The filename.
-   * @param success Indicates wether the operation succeeded or not.
+   * @throw IzSoundException An exception is thrown when the opening operation
+   *                         process encounters a failure.
    */
-  virtual void open(const char* filename, bool &success);
+  virtual void open(const char* filename) throw(IzSoundException);
 
   /**
    * Returns the total stream playing time, in seconds.

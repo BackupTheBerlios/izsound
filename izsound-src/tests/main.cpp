@@ -140,40 +140,47 @@ int main(int argc, char** argv)
   {
     // Yes, it looks like bad old C, a map to functions would be cleaner,
     // but ... it's like that and that's the wat it is.
-    if (strcmp(argv[i], "chainwork") == 0)
-      chainwork();
-    else if (strcmp(argv[i], "silence_oss") == 0)
-      silence_oss();
-    else if (strcmp(argv[i], "oggplay") == 0)
-      oggplay();
-    else if (strcmp(argv[i], "pitchplay") == 0)
-      pitchplay();
-    else if (strcmp(argv[i], "crossfade") == 0)
-      crossfade();
-    else if (strcmp(argv[i], "volume") == 0)
-      volume();
-    else if (strcmp(argv[i], "aoplayoss") == 0)
-      aoplayoss();
-    else if (strcmp(argv[i], "oggseek") == 0)
-      oggseek();
-    else if (strcmp(argv[i], "aowritefile") == 0)
-      aowritefile();
-    else if (strcmp(argv[i], "delayextrastereo") == 0)
-      delayextrastereo();
-    else if (strcmp(argv[i], "demultiplexer") == 0)
-      demultiplexer();
-    else if (strcmp(argv[i], "flanger") == 0)
-      flanger();
-    else if (strcmp(argv[i], "picker") == 0)
-      picker();
-    else if (strcmp(argv[i], "bandfilter") == 0)
-      bandfilter();
-    else if (strcmp(argv[i], "connexions") == 0)
-      connexions();
-    else if (strcmp(argv[i], "madplay") == 0)
-      madplay();
-    else if (strcmp(argv[i], "madseek") == 0)
-      madseek();
+    try
+    {
+      if (strcmp(argv[i], "chainwork") == 0)
+        chainwork();
+      else if (strcmp(argv[i], "silence_oss") == 0)
+        silence_oss();
+      else if (strcmp(argv[i], "oggplay") == 0)
+        oggplay();
+      else if (strcmp(argv[i], "pitchplay") == 0)
+        pitchplay();
+      else if (strcmp(argv[i], "crossfade") == 0)
+        crossfade();
+      else if (strcmp(argv[i], "volume") == 0)
+        volume();
+      else if (strcmp(argv[i], "aoplayoss") == 0)
+        aoplayoss();
+      else if (strcmp(argv[i], "oggseek") == 0)
+        oggseek();
+      else if (strcmp(argv[i], "aowritefile") == 0)
+        aowritefile();
+      else if (strcmp(argv[i], "delayextrastereo") == 0)
+        delayextrastereo();
+      else if (strcmp(argv[i], "demultiplexer") == 0)
+        demultiplexer();
+      else if (strcmp(argv[i], "flanger") == 0)
+        flanger();
+      else if (strcmp(argv[i], "picker") == 0)
+        picker();
+      else if (strcmp(argv[i], "bandfilter") == 0)
+        bandfilter();
+      else if (strcmp(argv[i], "connexions") == 0)
+        connexions();
+      else if (strcmp(argv[i], "madplay") == 0)
+        madplay();
+      else if (strcmp(argv[i], "madseek") == 0)
+        madseek();
+    }
+    catch (IzSoundException &err)
+    {
+      cout << err.what() << endl;
+    }
   }
 
   return 0;
@@ -210,14 +217,8 @@ void silence_oss()
 {
   // Init
   cout << endl << "[ oss_output ]" << endl << endl;
-  bool success;
   Silencer silencer;
-  OssOutput oss(success);
-  if (!success)
-  {
-    cout << "OSS output initialisation failed." << endl;
-    return;
-  }
+  OssOutput oss;
 
   // Connection
   silencer.connect(&oss, 0, 0);
@@ -237,13 +238,7 @@ void oggplay()
 {
   // Init
   cout << endl << "[ oggplay ]" << endl << endl;
-  bool success;
-  OssOutput oss(success);
-  if (!success)
-  {
-    cout << "OSS output initialisation failed." << endl;
-    return;
-  }
+  OssOutput oss;
   OggFileDecoder decoder;
 
   // Connection
@@ -251,29 +246,19 @@ void oggplay()
 
   // Let's run
   decoder.play();
-  decoder.open("track.ogg", success);
+  decoder.open("track.ogg");
   decoder.play();
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
   for (int i = 0; i < 2000; ++i) decoder.run();
-  decoder.open("track2.ogg", success);
+
+  decoder.open("track2.ogg");
   cout << "Total time on the track: " << decoder.getTotalTime()
-       << " (s)" << endl;
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
+      << " (s)" << endl;
   while (!decoder.isEndReached())
   {
     cout << "\rTime: " << decoder.getCurrentTime() << " (s)"
-         << "          ";
+        << "          ";
     decoder.run();
   }
-  cout << endl;
 
   // Cleanups
   oss.flush();
@@ -287,19 +272,8 @@ void pitchplay()
 {
   // Init
   cout << endl << "[ pitchplay ]" << endl << endl;
-  bool success;
-  OssOutput oss(success);
-  if (!success)
-  {
-    cout << "OSS output initialisation failed." << endl;
-    return;
-  }
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
+  OssOutput oss;
+  OggFileDecoder decoder("track.ogg");
   double ratio = 0.8;
   double tab[] = { 0.8, 0.85, 0.90, 0.95, 1.0, 1.05, 1.1, 1.15, 1.20,
                    1.15, 1.1, 1.05, 1.0, 0.95, 0.90, 0.85, 0.8 };
@@ -333,25 +307,9 @@ void crossfade()
 {
   // Init
   cout << endl << "[ crossfade ]" << endl << endl;
-  bool success;
-  OssOutput oss(success);
-  if (!success)
-  {
-    cout << "OSS output initialisation failed." << endl;
-    return;
-  }
-  OggFileDecoder decoder1("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
-  OggFileDecoder decoder2("track2.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
+  OssOutput oss;
+  OggFileDecoder decoder1("track.ogg");
+  OggFileDecoder decoder2("track2.ogg");
   CrossFader crossfader;
 
   // Connections
@@ -385,19 +343,8 @@ void volume()
 {
   // Init
   cout << endl << "[ volume ]" << endl << endl;
-  bool success;
-  OssOutput oss(success);
-  if (!success)
-  {
-    cout << "OSS output initialisation failed." << endl;
-    return;
-  }
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
+  OssOutput oss;
+  OggFileDecoder decoder("track.ogg");
   Volume volume(0.5);
 
   // Connection
@@ -421,19 +368,8 @@ void aoplayoss()
 {
   // Init
   cout << endl << "[ aoplayoss ]" << endl << endl;
-  bool success;
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
-  LibaoOutput ao("oss", 0, success);
-  if (!success)
-  {
-    cout << "Could not initialise OSS/LibAO." << endl;
-    return;
-  }
+  OggFileDecoder decoder("track.ogg");
+  LibaoOutput ao("oss", 0);
 
   // Connection
   decoder.connect(&ao, 0, 0);
@@ -455,19 +391,8 @@ void oggseek()
 {
   // Init
   cout << endl << "[ oggseek ]" << endl << endl;
-  bool success;
-  OssOutput oss(success);
-  if (!success)
-  {
-    cout << "OSS output initialisation failed." << endl;
-    return;
-  }
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
+  OssOutput oss;
+  OggFileDecoder decoder("track.ogg");
 
   // Connection
   decoder.connect(&oss, 0, 0);
@@ -490,19 +415,8 @@ void aowritefile()
 {
   // Init
   cout << endl << "[ aofilewrite ]" << endl << endl;
-  bool success;
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
-  LibaoOutput ao("wav", 0, "aowritefile.wav", success);
-  if (!success)
-  {
-    cout << "Could not initialise Wav/LibAO." << endl;
-    return;
-  }
+  OggFileDecoder decoder("track.ogg");
+  LibaoOutput ao("wav", 0, "aowritefile.wav");
 
   // Connection
   decoder.connect(&ao, 0, 0);
@@ -524,20 +438,9 @@ void delayextrastereo()
 {
   // Init
   cout << endl << "[ delayextrastereo ]" << endl << endl;
-  bool success;
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
+  OggFileDecoder decoder("track.ogg");
   DelayExtraStereo extraStereo;
-  LibaoOutput ao("oss", 0, success);
-  if (!success)
-  {
-    cout << "Could not initialise OSS/LibAO." << endl;
-    return;
-  }
+  LibaoOutput ao("oss", 0);
 
   // Connection
   decoder.connect(&extraStereo, 0, 0);
@@ -560,25 +463,9 @@ void demultiplexer()
 {
   // Init
   cout << endl << "[ demultiplexer ]" << endl << endl;
-  bool success;
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
-  LibaoOutput aoPlay("oss", 0, success);
-  if (!success)
-  {
-    cout << "Could not initialise OSS/LibAO." << endl;
-    return;
-  }
-  LibaoOutput aoWrite("wav", 0, "aowritefile.wav", success);
-  if (!success)
-  {
-    cout << "Could not initialise Wav/LibAO." << endl;
-    return;
-  }
+  OggFileDecoder decoder("track.ogg");
+  LibaoOutput aoPlay("oss", 0);
+  LibaoOutput aoWrite("wav", 0, "aowritefile.wav");
   DeMultiplexer demux(3); // One is useless, we just make sure there aren't
                           // bugs in this case.
 
@@ -605,19 +492,8 @@ void flanger()
 {
   // Init
   cout << endl << "[ flanger ]" << endl << endl;
-  bool success;
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
-  LibaoOutput ao("oss", 0, success);
-  if (!success)
-  {
-    cout << "Could not initialise OSS/LibAO." << endl;
-    return;
-  }
+  OggFileDecoder decoder("track.ogg");
+  LibaoOutput ao("oss", 0);
   Flanger flanger;
 
   // Connection
@@ -655,19 +531,8 @@ void picker()
 {
   // Init
   cout << endl << "[ picker ]" << endl << endl;
-  bool success;
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
-  LibaoOutput ao("null", 0, success);
-  if (!success)
-  {
-    cout << "Could not initialise null/LibAO." << endl;
-    return;
-  }
+  OggFileDecoder decoder("track.ogg");
+  LibaoOutput ao("null", 0);
   DataPicker picker;
 
   // We open the file
@@ -712,19 +577,8 @@ void bandfilter()
 {
   // Init
   cout << endl << "[ bandfilter ]" << endl << endl;
-  bool success;
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
-  LibaoOutput ao("oss", 0, success);
-  if (!success)
-  {
-    cout << "Could not initialise OSS/LibAO." << endl;
-    return;
-  }
+  OggFileDecoder decoder("track.ogg");
+  LibaoOutput ao("oss", 0);
   BandFilter filter;
 
   // Connection
@@ -772,19 +626,8 @@ void connexions()
 {
   // Init
   cout << endl << "[ connexions ]" << endl << endl;
-  bool success;
-  OggFileDecoder decoder("track.ogg", success);
-  if (!success)
-  {
-    cout << "OGG initialisation failed." << endl;
-    return;
-  }
-  LibaoOutput ao("oss", 0, success);
-  if (!success)
-  {
-    cout << "Could not initialise OSS/LibAO." << endl;
-    return;
-  }
+  OggFileDecoder decoder("track.ogg");
+  LibaoOutput ao("oss", 0);
   Flanger flanger;
   BandFilter filter;
 
@@ -829,19 +672,8 @@ void madplay()
 {
   // Init
   cout << endl << "[ madplay ]" << endl << endl;
-  bool success;
-  MadDecoder decoder("track.mp3", success);
-  if (!success)
-  {
-    cout << "Mad initialisation failed." << endl;
-    return;
-  }
-  LibaoOutput ao("oss", 0, success);
-  if (!success)
-  {
-    cout << "Could not initialise OSS/LibAO." << endl;
-    return;
-  }
+  MadDecoder decoder("track.mp3");
+  LibaoOutput ao("oss", 0);
 
   // Connection
   decoder.connect(&ao, 0, 0);
@@ -867,19 +699,8 @@ void madseek()
 {
   // Init
   cout << endl << "[ madseek ]" << endl << endl;
-  bool success;
-  MadDecoder decoder("track.mp3", success);
-  if (!success)
-  {
-    cout << "Mad initialisation failed." << endl;
-    return;
-  }
-  LibaoOutput ao("oss", 0, success);
-  if (!success)
-  {
-    cout << "Could not initialise OSS/LibAO." << endl;
-    return;
-  }
+  MadDecoder decoder("track.mp3");
+  LibaoOutput ao("oss", 0);
 
   // Connection
   decoder.connect(&ao, 0, 0);

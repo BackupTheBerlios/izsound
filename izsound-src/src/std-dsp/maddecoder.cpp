@@ -121,14 +121,14 @@ MadDecoder::MadDecoder(const unsigned int &sampleRate)
   m_playerStatus = STOP;
 }
 
-MadDecoder::MadDecoder(const char* filename, bool &success,
-                       const unsigned int &sampleRate)
+MadDecoder::MadDecoder(const char* filename,
+                       const unsigned int &sampleRate) throw(IzSoundException)
   : DspUnit(sampleRate, 0, 1)
 {
   // Init
   commonInits();
   m_playerStatus = PLAY;
-  open(filename, success);
+  open(filename);
 }
 
 void MadDecoder::commonInits()
@@ -316,12 +316,11 @@ void MadDecoder::stop()
   m_offset = 0;
 }
 
-void MadDecoder::open(const char* filename, bool &success)
+void MadDecoder::open(const char* filename) throw(IzSoundException)
 {
   // Release the previous resources
   closeFile();
   initMadStructs();
-  success = true;
 
   // File opening
   m_inputFile = ::open(filename, O_RDONLY);
@@ -337,7 +336,7 @@ void MadDecoder::open(const char* filename, bool &success)
         m_fdm = (unsigned char *)map_file(m_inputFile, m_fileSize);
         if(m_fdm == 0)
         {
-          success = false;
+          throw IzSoundException("Could not mmap the file.");
         }
         m_totalTime = getSongTime();
       }
@@ -345,7 +344,10 @@ void MadDecoder::open(const char* filename, bool &success)
   }
 
   // Get ready
-  success = (m_inputFile != -1) && (m_totalTime > 0.0);
+  if ((m_inputFile == -1) || (m_totalTime <= 0.0))
+  {
+    throw IzSoundException("File opening failed.");
+  };
   m_endReached = false;
   m_frameCount = 0;
 }

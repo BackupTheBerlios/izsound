@@ -122,10 +122,10 @@ AC_ARG_ENABLE(debug,
               esac],
               [debug=false])
 if test x${debug} = xtrue; then
-  DFLAGS='-Wall -g -O0 -pipe -fno-rtti -fno-exceptions'
+  DFLAGS='-Wall -g -O0 -pipe'
 else
   DFLAGS=`echo ${CXXFLAGS} | sed -e s/-g//g`
-  DFLAGS="${DFLAGS} -Wall -pipe -fomit-frame-pointer -fno-rtti -fno-exceptions"
+  DFLAGS="${DFLAGS} -Wall -pipe -fomit-frame-pointer"
 fi
 AC_SUBST(CFLAGS, ${DFLAGS})
 AC_SUBST(CXXFLAGS, ${DFLAGS})

@@ -105,7 +105,7 @@ namespace izsound
  * @author Julien PONGE <julien@izforge.com>
  * @author Karl PITRICH <pit@root.at>
  */
-class MadDecoder : public DspUnit, virtual public Player
+class MadDecoder : public DspUnit, public virtual Player
 {
 
 private:
@@ -222,13 +222,12 @@ public:
    * Constructs a decoder with a file to open.
    *
    * @param filename The file to open.
-   * @param success <code>true</code> if the file opening succeeded,
-   *                <code>false</code> otherwise. You must not use the decoder
-   *                in the last case !
    * @param sampleRate The audio chain sample rate.
+   * @throw IzSoundException An exception is thrown if the file opening cannot
+   *        be properly done.
    */
-  MadDecoder(const char* filename, bool &success,
-             const unsigned int &sampleRate = 44100);
+  MadDecoder(const char* filename,
+             const unsigned int &sampleRate = 44100) throw(IzSoundException) ;
 
   /**
    * The desctructor.
@@ -256,9 +255,10 @@ public:
    * Opens a file from a filename.
    *
    * @param filename The filename.
-   * @param success Indicates wether the operation succeeded or not.
+   * @throw IzSoundException An exception is thrown when the opening operation
+   *                         process encounters a failure.
    */
-  virtual void open(const char* filename, bool &success);
+  virtual void open(const char* filename) throw(IzSoundException);
 
   /**
    * Indicates if we have reached the end of the stream or not.

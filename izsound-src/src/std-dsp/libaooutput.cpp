@@ -35,12 +35,12 @@ using namespace izsound;
 
 int LibaoOutput::m_instancesCounter = 0;
 
-LibaoOutput::LibaoOutput(const char* driver, ao_option* options, bool &success,
+LibaoOutput::LibaoOutput(const char* driver, ao_option* options,
                          const unsigned int &sampleRate)
+throw(IzSoundException)
  : DspUnit(sampleRate, 1, 0)
 {
   // Inits
-  success = false;
   m_device = 0;
   m_pcmBuffer = new char[BUFFER_SIZE];
   m_pcmBufferPosition = 0;
@@ -49,39 +49,45 @@ LibaoOutput::LibaoOutput(const char* driver, ao_option* options, bool &success,
   // LibAO part
   if (driver != 0)
   {
-    if ((m_driverId = ao_driver_id(driver)) < 0) return;
+    if ((m_driverId = ao_driver_id(driver)) < 0)
+    {
+      throw IzSoundException("There is no default driver.");
+    }
   }
   else
   {
     m_driverId = ao_default_driver_id();
   }
   ao_sample_format format =  { 16, (int)sampleRate, 2, AO_FMT_LITTLE };
-  if ((m_device = ao_open_live(m_driverId, &format, options)) == 0) return;
-
-  // Ok
-  success = true;
+  if ((m_device = ao_open_live(m_driverId, &format, options)) == 0)
+  {
+    throw IzSoundException("Device opening failure.");
+  }
 }
 
 LibaoOutput::LibaoOutput(const char* driver, ao_option* options,
-                         const char* filename, bool &success,
+                         const char* filename,
                          const unsigned int &sampleRate)
+throw(IzSoundException)
   : DspUnit(sampleRate, 1, 0)
 {
   // Inits
-  success = false;
   m_device = 0;
   m_pcmBuffer = new char[BUFFER_SIZE];
   m_pcmBufferPosition = 0;
   if (m_instancesCounter++ == 0) ao_initialize();
 
   // LibAO part
-  if ((m_driverId = ao_driver_id(driver)) < 0) return;
+  if ((m_driverId = ao_driver_id(driver)) < 0)
+  {
+    throw IzSoundException("Bad driver ID.");
+  }
   ao_sample_format format =  { 16, (int)sampleRate, 2, AO_FMT_LITTLE };
   if ((m_device = ao_open_file(m_driverId, filename, 1,
-                               &format, options)) == 0) return;
-
-  // Ok
-  success = true;
+                               &format, options)) == 0)
+  {
+    throw IzSoundException("Device opening failure.");
+  }
 }
 
 LibaoOutput::~LibaoOutput()

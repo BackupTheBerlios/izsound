@@ -33,8 +33,9 @@
 using namespace std;
 using namespace izsound;
 
-OssOutput::OssOutput(bool &success, const unsigned int &sampleRate,
+OssOutput::OssOutput(const unsigned int &sampleRate,
                      const unsigned int &bufferTime, const char* device)
+throw(IzSoundException)
   : DspUnit(sampleRate, 1, 0)
 {
   // We allocate the buffer
@@ -45,20 +46,21 @@ OssOutput::OssOutput(bool &success, const unsigned int &sampleRate,
 
   // We open and set-up the device
   unsigned int param;
-  success = false;
-  if ((m_device = open(device, O_WRONLY)) < 0) return;
+  if ((m_device = open(device, O_WRONLY)) < 0) goto fail;
   param = AFMT_S16_LE;
-  if (ioctl(m_device, SNDCTL_DSP_SETFMT, &param) < 0) return;
-  if (param != AFMT_S16_LE) return;
+  if (ioctl(m_device, SNDCTL_DSP_SETFMT, &param) < 0) goto fail;
+  if (param != AFMT_S16_LE) goto fail;
   param = 2;
-  if (ioctl(m_device, SNDCTL_DSP_CHANNELS, &param) < 0) return;
-  if (param != 2) return;
+  if (ioctl(m_device, SNDCTL_DSP_CHANNELS, &param) < 0) goto fail;
+  if (param != 2) goto fail;
   param = m_sampleRate;
-  if (ioctl(m_device, SNDCTL_DSP_SPEED, &param) < 0) return;
-  if (param != m_sampleRate) return;
+  if (ioctl(m_device, SNDCTL_DSP_SPEED, &param) < 0) goto fail;
+  if (param != m_sampleRate) goto fail;
+  return;
 
-  // It's gone ok.
-  success = true;
+  // Ooops
+fail:
+  throw IzSoundException("Could not open the OSS device.");
 }
 
 OssOutput::~OssOutput()

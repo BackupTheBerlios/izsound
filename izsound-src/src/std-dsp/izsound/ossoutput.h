@@ -62,6 +62,7 @@
 #endif
 
 #include <dspunit.h>
+#include <izsoundexception.h>
 
 namespace izsound
 {
@@ -126,15 +127,15 @@ public:
   /**
    * The constructor.
    *
-   * @param success Indicates wether the device set-up succeeded or not. If it
-   * is <code>false</code>, then the unit should <b>not</b> be used.
    * @param sampleRate The sample rate to use.
    * @param bufferTime The time length of the buffer, in milliseconds.
    * @param device The device to open.
+   * @throw IzSoundException An exception is thrown if it is not possible to
+   *        open the OSS device.
    */
-  OssOutput(bool &success, const unsigned int &sampleRate = 44100,
+  OssOutput(const unsigned int &sampleRate = 44100,
             const unsigned int &bufferTime = 500,
-            const char* device = "/dev/dsp");
+            const char* device = "/dev/dsp") throw(IzSoundException);
 
   /**
    * The destructor.

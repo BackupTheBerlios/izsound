@@ -120,11 +120,6 @@ protected:
           const unsigned int &maxIn = 1, const unsigned int &maxOut = 1);
 
   /**
-   * The destructor.
-   */
-  virtual ~DspUnit();
-
-  /**
    * This is the method that performs the Dsp job. It can read from the input
    * slots and it must send the processed data to all its output slots. When
    * making a new Dsp unit, implementing this method is nearly all your job,
@@ -134,6 +129,11 @@ protected:
   virtual void performDsp() = 0;
 
 public:
+
+  /**
+   * The destructor.
+   */
+  virtual ~DspUnit();
 
   /**
    * Returns the audio chain sample rate.

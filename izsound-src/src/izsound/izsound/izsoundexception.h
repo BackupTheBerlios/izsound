@@ -28,88 +28,51 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef IZSOUND_PLAYER_H
-#define IZSOUND_PLAYER_H
+#ifndef IZSOUND_IZSOUND_EXCEPTION_H
+#define IZSOUND_IZSOUND_EXCEPTION_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <izsoundexception.h>
+#include <string>
+#include <exception>
 
 namespace izsound
 {
 
 /**
- * Defines an interface for a player. A player supports various kinds of
- * operations like:
- * <ul>
- *   <li>play / stop / pause</li>
- *   <li>seeking</li>
- *   <li>...</li>
- * </ul>
+ * Defines an IzSound exception. This is the most generic IzSound exception.
+ * Subclasses can be defined to provide a more specific errors-handling.
  *
  * @author Julien PONGE <julien@izforge.com>
  */
-class Player
+class IzSoundException : public std::exception
 {
+
+private:
+
+  /** The exception message. */
+  std::string m_what;
 
 public:
 
   /**
-   * Play operation. The expected behaviour is to start playing from the
-   * current position.
-   */
-  virtual void play() = 0;
-
-  /**
-   * Pause operation.
-   */
-  virtual void pause() = 0;
-
-  /**
-   * Stop operation. The expected behaviour is to go back to the beginning of
-   * the source.
-   */
-  virtual void stop() = 0;
-
-  /**
-   * Opens a file from a filename.
+   * The constructor.
    *
-   * @param filename The filename.
-   * @throw IzSoundException An exception is thrown when the opening operation
-   *                         process encounters a failure.
+   * @param what The exception message.
    */
-  virtual void open(const char* filename) throw(IzSoundException) = 0;
+  IzSoundException(const std::string &what) throw() : std::exception()
+  { m_what = what; }
 
   /**
-   * Indicates if we have reached the end of the stream or not.
-   *
-   * @return <code>true</code> if we have reached the end, <code>false</code>
-   *         otherwise.
+   * The destructor.
    */
-  virtual bool isEndReached() = 0;
+  virtual ~IzSoundException() throw() { }
 
   /**
-   * Returns the total stream playing time, in seconds.
+   * Gives the exception message.
    *
-   * @return The total playing time.
+   * @return The exception message.
    */
-  virtual double getTotalTime() = 0;
-
-  /**
-   * Seeks to a position.
-   *
-   * @param pos The position in seconds.
-   */
-  virtual void seek(const double &pos) = 0;
-
-  /**
-   * Gets the current time, in seconds.
-   *
-   * @return The current time, in seconds.
-   */
-  virtual double getCurrentTime() = 0;
+  virtual const char* what() const throw()
+  { return m_what.c_str(); }
 
 };
 

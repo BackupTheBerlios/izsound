@@ -1,3 +1,15 @@
+[ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
+
+2004.01.22 (Julien Ponge):
+* Errors handling is now made using exceptions. This breaks the APIs as a lot
+  of methods and constructors used to return the success information using a
+  reference to a boolean.
+
+2004.01.21 (Julien Ponge):
+* DspUnit: the destructor is now public.
+* OggFileDecoder, MadDecoder: replaced 'virtual public Player' by
+  'public virtual Player'.
+
 [ IzSound 0.2.0 ] (2004.01.19) release-0-2-0
 
 2004.01.19 (Julien Ponge):

@@ -33,9 +33,10 @@
 using namespace std;
 using namespace izsound;
 
-OggFileDecoder::OggFileDecoder(const char* filename, bool &success,
+OggFileDecoder::OggFileDecoder(const char* filename,
                                const unsigned int &bufferSize,
                                const unsigned int &sampleRate)
+throw(IzSoundException)
   : DspUnit(sampleRate, 0, 1)
 {
   // Init
@@ -46,7 +47,7 @@ OggFileDecoder::OggFileDecoder(const char* filename, bool &success,
   m_readBuffer = new char[m_readBufferSize];
 
   // We open
-  open(filename, success);
+  open(filename);
 }
 
 OggFileDecoder::OggFileDecoder(const unsigned int &bufferSize,
@@ -149,11 +150,10 @@ void OggFileDecoder::stop()
   ov_time_seek(m_oggFile, 0.0);
 }
 
-void OggFileDecoder::open(const char* filename, bool &success)
+void OggFileDecoder::open(const char* filename) throw(IzSoundException)
 {
   // Init
   clearOggDescriptor();
-  success = false;
   m_endReached = false;
 
   // We open the file
@@ -161,17 +161,14 @@ void OggFileDecoder::open(const char* filename, bool &success)
   if (handle == 0)
   {
     m_oggFile = 0;
-    return;
+    throw IzSoundException("Could not open the file.");
   }
   m_oggFile = new OggVorbis_File();
   if (ov_open(handle, m_oggFile, 0, 0) != 0)
   {
     m_oggFile = 0;
-    return;
+    throw IzSoundException("Ogg/Vorbis: could not open the file.");
   }
-
-  // Everything went fine
-  success = true;
 }
 
 double OggFileDecoder::getTotalTime()

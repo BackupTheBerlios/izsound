@@ -41,6 +41,7 @@
 #include <ao/ao.h>
 
 #include <dspunit.h>
+#include <izsoundexception.h>
 
 #define BUFFER_SIZE 4096
 
@@ -111,11 +112,12 @@ public:
    * @param driver The short driver name. Set it to <code>0</code> if you want
    *               to use the libao default autodetected driver.
    * @param options The driver options (can be <code>0</code> for the defaults).
-   * @param success Indicates wether the unit will be operational or not.
    * @param sampleRate The audio chain sample rate.
+   * @throw IzSoundException An exception is thrown is the libao fails to open
+   *        the desired device.
    */
-  LibaoOutput(const char* driver, ao_option* options, bool &success,
-              const unsigned int &sampleRate = 44100);
+  LibaoOutput(const char* driver, ao_option* options,
+              const unsigned int &sampleRate = 44100) throw(IzSoundException);
 
   /**
    * The constructor for a file output device. Please refer to the libao docs.
@@ -123,11 +125,12 @@ public:
    * @param driver The short driver name.
    * @param options The driver options (can be <code>0</code> for the defaults).
    * @param filename The file name.
-   * @param success Indicates wether the unit will be operational or not.
    * @param sampleRate The audio chain sample rate.
+   * @throw IzSoundException An exception is thrown is the libao fails to open
+   *        the desired device.
    */
   LibaoOutput(const char* driver, ao_option* options, const char* filename,
-              bool &success, const unsigned int &sampleRate = 44100);
+              const unsigned int &sampleRate = 44100) throw(IzSoundException);
 
   /**
    * The destructor.
