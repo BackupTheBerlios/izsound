@@ -181,7 +181,7 @@ public:
    * when building a DSP chain inside a DSP unit. There is no checking
    * performed.</b>
    *
-   * @param The dsp to bind the input to.
+   * @param dsp The dsp to bind the input to.
    * @param mySlot The slot number of this DSP.
    * @param itsSlot The other unit slot number.
    */
