@@ -1,4 +1,7 @@
-[ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
+[ IzSound 0.0.6 ] (2003.12.19) release-0-0-6
+
+2003.12.19 (Julien Ponge):
+* New IzSound release.
 
 2003.12.18 (Julien Ponge):
 * Fixed a bug when connecting/deconnecting DSP units on-the-fly.
