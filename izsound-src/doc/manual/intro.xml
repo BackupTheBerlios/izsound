@@ -51,6 +51,7 @@
     <listitem><para>tasks management</para></listitem>
     <listitem><para>CVS repository</para></listitem>
     <listitem><para>files releases</para></listitem>
+    <listitem><para>anonymous FTP space</para></listitem>
   </itemizedlist>
   </para>
   
@@ -92,7 +93,7 @@
         </row>
         <row>
           <entry><para><classname>MadDecoder</classname></para></entry>
-          <entry><para>Your application license has to be compatible with theGNU GPL.
+          <entry><para>Your application license has to be compatible with the GNU GPL.
           The DSP unit source code is licensed under the terms of the GNU GPL.</para></entry>
         </row>
         <row>

@@ -22,7 +22,7 @@
   <itemizedlist>
   
     <listitem><para>The <classname>MadDecoder</classname> class is based on the
-    <filename>madldd.c</filename> program from Bertrand Petit.</para>
+    <filename>madlld.c</filename> program from Bertrand Petit.</para>
     <screen><![CDATA[
 /****************************************************************************
  * madlld.c -- A simple program decoding an mpeg audio stream to 16-bit     *
@@ -65,10 +65,11 @@
 ]]></screen>
     </listitem>
     
-    <listitem><para>The <classname>MadDecoder</classname> class makes use of the
-    several portions of third-party code. To make the things simpler, it is licensed
-    under the terms of the GNU GPL. The GNU GPL terms are provided in the IzSound
-    sources distribution in the <filename>COPYING.GPL</filename> file.</para>
+    <listitem><para>The <classname>MadDecoder</classname> class makes use of
+    third party code licensed under the terms of the GNU GPL. As a consequence,
+    this class is licensed under the terms of the GNU GPL.
+    The GNU GPL terms are provided in the IzSound sources distribution in the
+    <filename>COPYING.GPL</filename> file.</para>
     <screen><![CDATA[
 /*
  * This program is free software; you can redistribute it and/or modify
