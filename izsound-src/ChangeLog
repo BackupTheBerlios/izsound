@@ -1,5 +1,9 @@
 [ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
 
+2003.12.30 (Julien Ponge):
+* MadDecoder: stop() method fix so that it properly works.
+* MadDecoder: getCurrentTime() is now implemented.
+
 2003.12.29 (Julien Ponge):
 * OggFileDecoder: the decoder goes in 'STOP' mode when the end of the file is
   reached.

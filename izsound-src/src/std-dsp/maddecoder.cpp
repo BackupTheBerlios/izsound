@@ -71,6 +71,7 @@ void MadDecoder::releaseMadStructs()
   mad_synth_finish(&m_synth);
   mad_frame_finish(&m_frame);
   mad_stream_finish(&m_stream);
+  mad_timer_reset(&m_timer);
 }
 
 MadDecoder::~MadDecoder()
@@ -232,6 +233,12 @@ void MadDecoder::stop()
 {
   m_playerStatus = STOP;
   m_frameCount = 0;
+  releaseMadStructs();
+  initMadStructs();
+  if (m_inputFile != 0)
+  {
+    rewind(m_inputFile);
+  }
 }
 
 void MadDecoder::open(const char* filename, bool &success)
@@ -261,7 +268,8 @@ void MadDecoder::seek(const double &pos)
 
 double MadDecoder::getCurrentTime()
 {
-  return 0.0; // TODO
+  double msecs = (double)mad_timer_count(m_timer, MAD_UNITS_MILLISECONDS);
+  return (msecs / 1000.0);
 }
 
 /*
