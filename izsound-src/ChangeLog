@@ -1,4 +1,4 @@
-[ IzSound x.y.z ] (2003.xx.yy) release-x-y-z
+[ IzSound 0.0.2 ] (2003.09.27) release-0-0-2
 
 2003.09.27 (Julien Ponge):
 * Added a new DSP DelayExtraStereo that applies a well-know stereo expansion
