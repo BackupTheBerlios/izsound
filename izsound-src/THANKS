@@ -15,4 +15,5 @@ http://www.bsd-dk.dk/~elrond/audio/madlld/ .
 [ Karl Pitrich ]
 
 The MadDecoder DSP unit has been dramatically improved thanks to his work. He
-also has contributed to the Volume DSP unit.
+has contributed to the Volume DSP unit. He has contributed the WhiteNoise DSP
+unit.

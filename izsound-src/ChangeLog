@@ -1,5 +1,8 @@
 [ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
 
+2004.01.16 (Julien Ponge):
+* Addition of Karl Pitrich's WhiteNoise DSP unit.
+
 2004.01.11 (Julien Ponge):
 * MadDecoder: a lot of enhancements thanks to Karl Pitrich. Now, the DSP unit
   does no longer need to make a scan of the file to decode to grab the length.

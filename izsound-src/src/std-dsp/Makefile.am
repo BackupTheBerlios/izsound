@@ -9,7 +9,8 @@ SRCZ = blackhole.cpp \
        flanger.cpp \
        fragmenter.cpp \
        datapicker.cpp \
-       bandfilter.cpp
+       bandfilter.cpp \
+       whitenoise.cpp
 
 INCZ = izsound/blackhole.h \
        izsound/crossfader.h \
@@ -22,7 +23,8 @@ INCZ = izsound/blackhole.h \
        izsound/flanger.h \
        izsound/fragmenter.h \
        izsound/datapicker.h \
-       izsound/bandfilter.h
+       izsound/bandfilter.h \
+       izsound/whitenoise.h
 
 LIBZ = ${top_builddir}/src/izsound/libizsound.la \
        @VORBIS_LIBS@ \
