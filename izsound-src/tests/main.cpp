@@ -50,6 +50,7 @@
 #include <crossfader.h>
 #include <libaooutput.h>
 #include <oggfiledecoder.h>
+#include <delayextrastereo.h>
 
 using namespace std;
 using namespace izsound;
@@ -64,6 +65,7 @@ void volume();
 void aoplayoss();
 void oggseek();
 void aowritefile();
+void delayextrastereo();
 
 /**
  * The program entry-point.
@@ -94,8 +96,11 @@ int main(int argc, char** argv)
          << "\n  (needs a file named track.ogg)" << endl
          << "- aowritefile : OggFileDecoder + LibaoOutput"
             "\n  (needs a file named track.ogg)" << endl
-        << endl;
-    exit(0);
+         << "- delayextrastereo : OggFileDecoder + DelayExtraStereo "
+            "+ LibaoOutput"
+            "\n  (needs a file named track.ogg)" << endl
+         << endl;
+      exit(0);
   }
   for (int i = 1; i < argc; ++i)
   {
@@ -117,8 +122,10 @@ int main(int argc, char** argv)
       oggseek();
     else if (strcmp(argv[i], "aowritefile") == 0)
       aowritefile();
+    else if (strcmp(argv[i], "delayextrastereo") == 0)
+      delayextrastereo();
   }
-        
+
   return 0;
 }
 
@@ -449,6 +456,42 @@ void aowritefile()
 
   // Connection
   decoder.connect(&ao, 0, 0);
+
+  // Let's roll baby !
+  while (!decoder.isEndReached())
+  {
+    decoder.run();
+  }
+
+  // Cleanups
+  ao.flush();
+}
+
+/**
+ * LibaoOutput DSP test with the OSS driver.
+ */
+void delayextrastereo()
+{
+  // Init
+  cout << endl << "[ delayextrastereo ]" << endl << endl;
+  bool success;
+  OggFileDecoder decoder("track.ogg", success);
+  if (!success)
+  {
+    cout << "OGG initialisation failed." << endl;
+    return;
+  }
+  DelayExtraStereo extraStereo;
+  LibaoOutput ao("oss", 0, success);
+  if (!success)
+  {
+    cout << "Could not initialise OSS/LibAO." << endl;
+    return;
+  }
+
+  // Connection
+  decoder.connect(&extraStereo, 0, 0);
+  extraStereo.connect(&ao, 0, 0);
 
   // Let's roll baby !
   while (!decoder.isEndReached())

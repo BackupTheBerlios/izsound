@@ -3,14 +3,16 @@ SRCZ = blackhole.cpp \
        oggfiledecoder.cpp \
        pitch.cpp \
        silencer.cpp \
-       volume.cpp
+       volume.cpp \
+       delayextrastereo.cpp
 
 INCZ = izsound/blackhole.h \
        izsound/crossfader.h \
        izsound/oggfiledecoder.h \
        izsound/pitch.h \
        izsound/silencer.h \
-       izsound/volume.h
+       izsound/volume.h \
+       izsound/delayextrastereo.h
 
 LIBZ = ${top_builddir}/src/izsound/libizsound.la \
        @VORBIS_LIBS@ \
