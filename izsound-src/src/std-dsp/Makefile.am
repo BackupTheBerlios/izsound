@@ -54,7 +54,7 @@ if USE_LIBMAD
 endif
 
 lib_LTLIBRARIES = libstdizdsp.la
-libstdizdsp_la_LDFLAGS  = -release @PACKAGE_VERSION@
+libstdizdsp_la_LDFLAGS  = -version-info @SHARED_VERSION@
 libstdizdsp_la_SOURCES  = ${SRCZ}
 nobase_include_HEADERS  = ${INCZ}
 libstdizdsp_la_LIBADD   = ${LIBZ}
