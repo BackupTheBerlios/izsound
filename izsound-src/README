@@ -32,20 +32,5 @@ output the sound on your sound card, tweak the pitch and so on.
 
 [ Licensing ]
 
-IzSound and the components of the standard DSP library are licensed under a 2
-clauses BSD-style license. Please note that the standard DSP library contains a
-DSP unit that makes use of the libao library from the Xiph.org foundation. This
-library beeing licensed under the terms of the GNU GPL license, your application
-will have to be published under a license that is compatible with the GNU GPL
-license. If this is a problem for you, the IzSound 'configure' script can
-disable the compilation of this unit.
-
-If you plan to contribute to the project, you can do it by sending patches or
-new files. Please make it available under a free software license such as the
-BSD, X11 or Zlib/PNG license. The GNU GPL would not be very much appreciated
-for a DSP unit, but it is not a problem if it makes use of a GPL-covered
-library.
-
-The goal is that IzSound stays a non-copyleft free software library, so this is
-why there is a requirement for non-copyleft DSP units. But as mentionned above,
-a DSP unit can use a copylefted library and it is perfectly fine.
+IzSound is published under a 2 clauses style BSD license. See the COPYING file
+shipped along in the distribution for the exact terms.
