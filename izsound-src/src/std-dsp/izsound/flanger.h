@@ -28,6 +28,7 @@
 
 #include <iterator>
 #include <algorithm>
+#include <functional>
 
 #include <dspunit.h>
 

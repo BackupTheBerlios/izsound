@@ -247,8 +247,11 @@ void MadDecoder::open(const char* filename, bool &success)
   closeFile();
   initMadStructs();
   m_inputFile = fopen(filename, "rb");
+  success = (m_inputFile != NULL);
+  if (!success) return;
   scanInputFile();
-  success = (m_inputFile != NULL) && (m_totalTime > 0.0);
+  success = (m_totalTime > 0.0);
+  if (!success) return;
   m_endReached = false;
   m_frameCount = 0;
 }

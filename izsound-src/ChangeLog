@@ -1,3 +1,10 @@
+[ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
+
+2004.01.07 (Julien Ponge):
+* MadDecoder: error handling fix when opening a file.
+* Flanger: a '#include <functional>' was missing in the header file and caused
+  compilation errors with GCC 2.9x.
+
 [ IzSound 0.1.0 ] (2004.01.05) release-0-1-0
 
 2004.01.05 (Julien Ponge):
