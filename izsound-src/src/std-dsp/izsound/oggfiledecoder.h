@@ -120,7 +120,7 @@ public:
   /**
    * Tells wether the end of the stream has been reached or not.
    */
-  inline virtual bool isEndReached() { return m_endReached; }
+  virtual bool isEndReached() { return m_endReached; }
 
   /**
    * Play operation. The expected behaviour is to start playing from the
@@ -152,21 +152,21 @@ public:
    *
    * @return The total playing time.
    */
-  inline virtual double getTotalTime();
+  virtual double getTotalTime();
 
   /**
    * Seeks to a position.
    *
    * @param pos The position in seconds.
    */
-  inline virtual void seek(const double &pos);
+  virtual void seek(const double &pos);
 
   /**
    * Gets the current time, in seconds.
    *
    * @return The current time, in seconds.
    */
-  inline virtual double getCurrentTime();
+  virtual double getCurrentTime();
 
 };
 
