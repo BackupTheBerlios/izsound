@@ -567,7 +567,6 @@ void demultiplexer()
  */
 void flanger()
 {
-/*
   // Init
   cout << endl << "[ flanger ]" << endl << endl;
   bool success;
@@ -597,7 +596,6 @@ void flanger()
 
   // Cleanups
   ao.flush();
-*/
 
   cout << "[ The flanger is not operationnal. ]" << endl << endl;
 }

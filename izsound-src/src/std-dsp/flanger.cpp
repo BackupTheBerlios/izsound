@@ -61,8 +61,12 @@ Flanger::~Flanger()
 }
 
 void Flanger::performDsp()
-{
+{ 
   // Init
+  unsigned int i;
+  unsigned int j;
+  unsigned int k;
+  static unsigned int samplesCounter = 0;
   SlotData* input  = m_inSlots[0];
   SlotData* output = m_outSlots[0];
   (*output)[0].clear();
@@ -79,18 +83,72 @@ void Flanger::performDsp()
   copy((*input)[1].begin(), (*input)[1].end(), biRight2);
   
   // We process the data sample per sample
-  int nsamples = min(m_originalBuffer[0].size(), m_pitchedBuffer[0].size());
-  for (int i = 0; i < nsamples; ++i)
+  double ltemp;
+  double rtemp;
+  unsigned int osize = m_originalBuffer[0].size();
+  unsigned int psize = m_pitchedBuffer[0].size();
+  for (i = 0, j = 0; (i < osize) && (j < psize); ++i, ++j)
   {
     switch (m_internalState)
     {
     case INIT_STATE:
+      // We must pitch up during half a period
+      if ((samplesCounter % 30) == 0)
+      {
+        if (j != psize - 1)
+        {
+          ++j;
+        }
+      }
+      ltemp = (m_originalBuffer[0][i] + m_pitchedBuffer[0][j]) / 2.0;
+      rtemp = (m_originalBuffer[1][i] + m_pitchedBuffer[1][j]) / 2.0;
+      (*output)[0].push_back(ltemp);
+      (*output)[1].push_back(rtemp);
+      if ((++samplesCounter % m_halfPeriodSamplesCount) == 0)
+      {
+        samplesCounter  = 0;
+        m_internalState = SLOW_STATE;
+      }
       break;
       
     case FAST_STATE:
+      // We must pitch up during a full period
+      if ((samplesCounter % 30) == 0)
+      {
+        if (j !=psize - 1)
+        {
+          ++j;
+        }
+      }
+      ltemp = (m_originalBuffer[0][i] + m_pitchedBuffer[0][j]) / 2.0;
+      rtemp = (m_originalBuffer[1][i] + m_pitchedBuffer[1][j]) / 2.0;
+      (*output)[0].push_back(ltemp);
+      (*output)[1].push_back(rtemp);
+      if ((++samplesCounter % m_periodSamplesCount) == 0)
+      {
+        samplesCounter  = 0;
+        m_internalState = SLOW_STATE;
+      }
       break;
       
     case SLOW_STATE:
+      // We must slow down during a full period
+      if ((samplesCounter % 30) == 0)
+      {
+        if (j != 0)
+        {
+          --j;
+        }
+      }
+      ltemp = (m_originalBuffer[0][i] + m_pitchedBuffer[0][j]) / 2.0;
+      rtemp = (m_originalBuffer[1][i] + m_pitchedBuffer[1][j]) / 2.0;
+      (*output)[0].push_back(ltemp);
+      (*output)[1].push_back(rtemp);
+      if ((++samplesCounter % m_periodSamplesCount) == 0)
+      {
+        samplesCounter  = 0;
+        m_internalState = FAST_STATE;
+      }
       break;
       
     case HOME_STATE:
@@ -100,16 +158,31 @@ void Flanger::performDsp()
       continue;
     }
   }
+  
+  // Cleanups
+  for (k = 0; k <= i; ++k)
+  {
+    m_originalBuffer[0].pop_front();
+    m_originalBuffer[1].pop_front();
+  }
+  for (k = 0; k <= j; ++k)
+  {
+    m_pitchedBuffer[0].pop_front();
+    m_pitchedBuffer[1].pop_front();
+  }
 }
 
 void Flanger::setFrequency(const double &frequency)
 {
   m_frequency = frequency;
+  m_periodSamplesCount = (unsigned int)((double)m_sampleRate / m_frequency);
+  m_halfPeriodSamplesCount = m_periodSamplesCount / 2;
 }
 
 void Flanger::setAmplitude(const double &amplitude)
 {
   m_amplitude = amplitude;
+  
 }
 
 void Flanger::setWet(const double &wet)

@@ -63,6 +63,12 @@ private:
   
   /** The internal flanger state. */
   int m_internalState;
+  
+  /** The number of samples per period. */
+  unsigned int m_periodSamplesCount;
+  
+  /** The number of samples for a half period. */
+  unsigned int m_halfPeriodSamplesCount;
 
 protected:
 
@@ -81,7 +87,7 @@ public:
    * @param wet The wet/dry ratio.
    * @param sampleRate The audio chain sample rate.
    */
-  Flanger(const double &frequency = 0.5,
+  Flanger(const double &frequency = 1.0,
           const double &amplitude = 0.0001,
           const double &wet = 0.2,
           const unsigned int &sampleRate = 44100);
