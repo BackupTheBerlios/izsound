@@ -1,5 +1,12 @@
 [ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
 
+2003.11.25 (Julien Ponge):
+* Flanger: flushes its internal buffers when one of them becomes empty. Fixed
+  a segfault-prone bug.
+
+2003.11.24 (Julien Ponge):
+* The configure script does not specify an arbitrary '-Ox' flag anymore.
+
 2003.11.22 (Julien Ponge):
 * Flanger: some things had not been correctly merged during a CVS update. The
   problem is minor as only a comment had not been updated and a useless

@@ -556,7 +556,7 @@ void demultiplexer()
   {
     decoder.run();
   }
-
+  
   // Cleanups
   aoPlay.flush();
   aoWrite.flush();
@@ -602,6 +602,11 @@ void flanger()
       flanger.setFrequency(0.5);
     }
   }
+  for (int i = 0; i < 10; ++i)
+  {
+    decoder.run();
+  }
+
 
   // Cleanups
   ao.flush();

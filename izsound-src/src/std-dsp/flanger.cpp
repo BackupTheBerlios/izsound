@@ -79,12 +79,50 @@ void Flanger::performDsp()
   copy((*input)[1].begin(), (*input)[1].end(), biRight1);
   copy((*input)[0].begin(), (*input)[0].end(), biLeft2);
   copy((*input)[1].begin(), (*input)[1].end(), biRight2);
-  
-  // We process the data sample per sample
+
+  // We look for special cases
   double ltemp;
   double rtemp;
   unsigned int osize = m_originalBuffer[0].size();
   unsigned int psize = m_pitchedBuffer[0].size();
+ if (osize + psize == 0)         // No data, nothing to do.
+  {
+    return;
+  }
+  if (osize == 0)                 // We flush the pitched buffer.
+  {
+    transform(m_pitchedBuffer[0].begin(), m_pitchedBuffer[0].end(),
+              m_pitchedBuffer[0].begin(),
+              bind2nd(divides<double>(), 2.0));
+    transform(m_pitchedBuffer[1].begin(), m_pitchedBuffer[1].end(),
+              m_pitchedBuffer[1].begin(),
+              bind2nd(divides<double>(), 2.0));
+    back_insert_iterator<deque<double> > biLeft((*output)[0]);
+    back_insert_iterator<deque<double> > biRight((*output)[1]);
+    copy(m_pitchedBuffer[0].begin(),  m_pitchedBuffer[0].end(), biLeft);
+    copy(m_pitchedBuffer[1].begin(),  m_pitchedBuffer[1].end(), biRight);
+    m_pitchedBuffer[0].clear();
+    m_pitchedBuffer[1].clear();
+    return;
+  }
+  if (psize == 0)                 // We flush the original buffer.
+  {
+    transform(m_originalBuffer[0].begin(), m_originalBuffer[0].end(),
+              m_originalBuffer[0].begin(),
+              bind2nd(divides<double>(), 2.0));
+    transform(m_originalBuffer[1].begin(), m_originalBuffer[1].end(),
+              m_originalBuffer[1].begin(),
+              bind2nd(divides<double>(), 2.0));
+    back_insert_iterator<deque<double> > biLeft((*output)[0]);
+    back_insert_iterator<deque<double> > biRight((*output)[1]);
+    copy(m_originalBuffer[0].begin(),  m_originalBuffer[0].end(), biLeft);
+    copy(m_originalBuffer[1].begin(),  m_originalBuffer[1].end(), biRight);
+    m_originalBuffer[0].clear();
+    m_originalBuffer[1].clear();
+    return;
+  }
+ 
+  // We process the data sample per sample
   for (i = 0, j = 0; (i < osize) && (j < psize); ++i, ++j)
   {
     switch (m_internalState)
@@ -93,7 +131,7 @@ void Flanger::performDsp()
       // We must pitch up during half a period
       if ((++samplesCounter % m_pitchTrigger) == 0)
       {
-        if (j != psize - 1)
+        if (j < psize - 1)
         {
           ++j;
         }
@@ -109,7 +147,7 @@ void Flanger::performDsp()
       // We must pitch up during a full period
       if ((++samplesCounter % m_pitchTrigger) == 0)
       {
-        if (j !=psize - 1)
+        if (j < psize - 1)
         {
           ++j;
         }
@@ -126,7 +164,7 @@ void Flanger::performDsp()
       // We must slow down during a full period
       if ((++samplesCounter % m_pitchTrigger) == 0)
       {
-        if (j != 0)
+        if (j > 0)
         {
           --j;
         }
@@ -146,14 +184,14 @@ void Flanger::performDsp()
     (*output)[0].push_back(ltemp);
     (*output)[1].push_back(rtemp);
   }
-
+  
   // Cleanups
-  for (k = 0; k <= i; ++k)
+  for (k = 0; k < i; ++k)
   {
     m_originalBuffer[0].pop_front();
     m_originalBuffer[1].pop_front();
   }
-  for (k = 0; k <= j; ++k)
+  for (k = 0; k < j; ++k)
   {
     m_pitchedBuffer[0].pop_front();
     m_pitchedBuffer[1].pop_front();
