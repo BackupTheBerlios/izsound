@@ -1,0 +1,1 @@
+SUBDIRS = izsound std-dsp

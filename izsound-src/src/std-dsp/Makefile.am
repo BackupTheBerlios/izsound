@@ -1,0 +1,42 @@
+SRCZ = blackhole.cpp \
+       crossfader.cpp \
+       oggfiledecoder.cpp \
+       pitch.cpp \
+       silencer.cpp \
+       volume.cpp
+
+INCZ = izsound/blackhole.h \
+       izsound/crossfader.h \
+       izsound/oggfiledecoder.h \
+       izsound/pitch.h \
+       izsound/silencer.h \
+       izsound/volume.h
+
+LIBZ = ${top_builddir}/src/izsound/libizsound.la \
+       @VORBIS_LIBS@ \
+       @OGG_LIBS@ \
+       @VORBISFILE_LIBS@
+
+FLAGZ = ${CPPFLAGS} @VORBIS_CFLAGS@ @OGG_CFLAGS@
+INCLUDES = -I${top_srcdir}/src/izsound/izsound \
+           -Iizsound
+           ${all_includes}
+
+if USE_LIBAO
+  SRCZ  += libaooutput.cpp
+  INCZ  += izsound/libaooutput.h
+  LIBZ  += @AO_LIBS@
+  FLAGZ += @AO_CFLAGS@
+endif
+
+if MAKE_OSS_DSP
+  SRCZ += ossoutput.cpp
+  INCZ += izsound/ossoutput.h
+endif
+
+lib_LTLIBRARIES = libstdizdsp.la
+libstdizdsp_la_LDFLAGS  = -release @PACKAGE_VERSION@
+libstdizdsp_la_SOURCES  = ${SRCZ}
+nobase_include_HEADERS  = ${INCZ}
+libstdizdsp_la_LIBADD   = ${LIBZ}
+libstdizdsp_la_CPPFLAGS = ${FLAGZ}
