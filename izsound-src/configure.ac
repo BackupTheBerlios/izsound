@@ -1,5 +1,5 @@
 # Initialisations
-AC_INIT(IzSound, 0.0.3, julien@izforge.com)
+AC_INIT(IzSound, 0.0.4, julien@izforge.com)
 AC_CONFIG_SRCDIR(src/Makefile.am)
 AM_INIT_AUTOMAKE(dist-bzip2)
 AM_SANITY_CHECK
@@ -93,10 +93,8 @@ AC_ARG_ENABLE(debug,
 if test x${debug} = xtrue; then
   DFLAGS='-Wall -g -O0 -pipe -fno-rtti -fno-exceptions'
 else
-  DFLAGS=`echo ${CPPFLAGS} | sed s/-g//g`
-  if test x${DFLAGS} = x; then
-    DFLAGS='-Wall -O2 -pipe -fomit-frame-pointer -fno-rtti -fno-exceptions'
-  fi
+  DFLAGS=`echo ${CXXFLAGS} | sed -e s/-g//g -e s/-O.//g`
+  DFLAGS="${DFLAGS} -Wall -O2 -pipe -fomit-frame-pointer -fno-rtti -fno-exceptions"
 fi
 AC_SUBST(CFLAGS, ${DFLAGS})
 AC_SUBST(CXXFLAGS, ${DFLAGS})
