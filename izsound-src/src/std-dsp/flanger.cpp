@@ -34,7 +34,6 @@
 #define INIT_STATE 0
 #define FAST_STATE 1
 #define SLOW_STATE 2
-#define HOME_STATE 3
 
 using namespace std;
 using namespace izsound;

@@ -1,3 +1,10 @@
+[ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
+
+2003.11.22 (Julien Ponge):
+* Flanger: some things had not been correctly merged during a CVS update. The
+  problem is minor as only a comment had not been updated and a useless
+  '#define' had not been removed.
+
 [ IzSound 0.0.4 ] (2003.11.22) release-0-0-4
 
 2003.11.22 (Julien Ponge):

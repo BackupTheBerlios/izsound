@@ -38,9 +38,6 @@ namespace izsound
  * A DSP unit that applies a flanger effect on a sound stream.
  * This unit has one input slot and one output slot.
  *
- * <b>It is not yet fully working as changing the frequency on-the-fly
- * should introduce a decay in the sound processing.</b>
- *
  * @author Julien PONGE <julien@izforge.com>
  */
 class Flanger : public DspUnit
@@ -95,7 +92,7 @@ public:
    *
    * @param frequency The flanger frequency.
    * @param amplitude The effect amplitude in the [0, 1] range.
-   * @param wet The wet ratio in the [0, 1] range.
+   * @param wet The wet amount in the [0, 1] range.
    * @param sampleRate The audio chain sample rate.
    */
   Flanger(const double &frequency = 0.25,
