@@ -1,5 +1,9 @@
 [ IzSound x.y.z ] (xxxx.yy.zz) release-x-y-z
 
+2003.11.29 (Julien Ponge):
+* LibAOOutput: the driver can now be autodetected when passing 0 as the driver
+  string.
+
 2003.11.25 (Julien Ponge):
 * Flanger: flushes its internal buffers when one of them becomes empty. Fixed
   a segfault-prone bug.

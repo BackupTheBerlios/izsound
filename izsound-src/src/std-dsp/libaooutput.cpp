@@ -42,7 +42,14 @@ LibaoOutput::LibaoOutput(const char* driver, ao_option* options, bool &success,
   if (m_instancesCounter++ == 0) ao_initialize();
 
   // LibAO part
-  if ((m_driverId = ao_driver_id(driver)) < 0) return;
+  if (driver != 0)
+  {
+    if ((m_driverId = ao_driver_id(driver)) < 0) return;
+  }
+  else
+  {
+    m_driverId = ao_default_driver_id();
+  }
   ao_sample_format format =  { 16, (int)sampleRate, 2, AO_FMT_LITTLE };
   if ((m_device = ao_open_live(m_driverId, &format, options)) == 0) return;
 

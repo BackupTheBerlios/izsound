@@ -101,7 +101,8 @@ public:
   /**
    * The constructor for a live output device. Please refer to the libao docs.
    *
-   * @param driver The short driver name.
+   * @param driver The short driver name. Set it to <code>0</code> if you want
+   *               to use the libao default autodetected driver.
    * @param options The driver options (can be <code>0</code> for the defaults).
    * @param success Indicates wether the unit will be operational or not.
    * @param sampleRate The audio chain sample rate.
