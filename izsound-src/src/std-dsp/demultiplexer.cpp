@@ -50,8 +50,8 @@ void DeMultiplexer::performDsp()
   for (unsigned int i = 0; i < m_maxOutSlots; ++i)
   {
     // We get the output slot
+    if (m_outDspUnits[i] == 0) continue;
     output = m_outSlots[i];
-    if (output == 0) continue;
 
     // We copy
     (*output)[0].clear();

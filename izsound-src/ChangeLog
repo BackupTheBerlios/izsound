@@ -1,3 +1,9 @@
+[ IzSound x.y.z ] (2003.xx.yy) release-x-y-z
+
+2003.09.28 (Julien Ponge):
+
+* DeMultiplexer: better chaining checking fix.
+
 [ IzSound 0.0.2 ] (2003.09.27) release-0-0-2
 
 2003.09.27 (Julien Ponge):
