@@ -287,9 +287,9 @@ double MadDecoder::getCurrentTime()
  * loops runs in a forked process. So with the needs I have (grab the data by
  * small chunks), the only issue was to do some silly hacks like using Unix
  * sockets just to get the data. Indeed, it would be produced in another
- * process ... That's why I had not choice but use the low-level functions.
+ * process ... That's why I had no choice but to use the low-level functions.
  *
- * My implementation is a greatly refactor of madldd.c. Several things have been
+ * My implementation is a great refactor of madldd.c. Several things have been
  * changed and adapted to meet my needs. It now has a vague ressemblance with
  * the original work, but its author _really_ deserves some credit.
  */
